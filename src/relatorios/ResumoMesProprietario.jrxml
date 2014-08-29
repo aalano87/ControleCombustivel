@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="68d16402-3abf-4dc4-97c9-f80db003a6a0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Data1" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Data2" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Proprietario" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select a.mes as mes, (max(a.km) - min(a.km)) as km_rodados, sum(a.litros) as litros_gastos,
+(max(a.km) - min(a.km)) / sum(a.litros) as media, v.placa as placa
+from ABASTECIMENTO a
+inner join veiculo v
+on a.idveiculo = v.idveiculo
+inner join proprietario p
+on v.IDPROPRIETARIO = p.idproprietario
+where a.km > 0 and v.tipo like "Caminhão" and p.nome like $P{Proprietario} and a.data between $P{Data1} and $P{Data2}
+group by a.mes, v.placa]]>
+	</queryString>
+	<field name="mes" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="km_rodados" class="java.lang.Long"/>
+	<field name="litros_gastos" class="java.lang.Double"/>
+	<field name="media" class="java.lang.Double"/>
+	<field name="placa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="mesToString" class="java.lang.String">
+		<variableExpression><![CDATA[$F{mes}.equals(1) ? "Jan" : $F{mes}.equals(2) ? "Fev" : 
+$F{mes}.equals(3) ? "Mar" :
+$F{mes}.equals(4) ? "Abr" : $F{mes}.equals(5) ? "Mai" :
+$F{mes}.equals(6) ? "Jun" : $F{mes}.equals(7) ? "Jul" :
+$F{mes}.equals(8) ? "Ago" : $F{mes}.equals(9) ? "Set" :
+$F{mes}.equals(10) ? "Out": $F{mes}.equals(11) ? "Nov" :
+$F{mes}.equals(12) ? "Dez" : ""]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="32" width="100" height="20" uuid="5e9a9c06-c38b-44c3-978c-a9132a37aa6c"/>
+				<textFieldExpression><![CDATA[$P{Data1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="118" y="32" width="100" height="20" uuid="4994c91e-5c6e-4e25-9971-5acf817d7e9b"/>
+				<textFieldExpression><![CDATA[$P{Data2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="59" width="100" height="20" uuid="8b05cc8b-d165-41c8-ae92-20a0ce0409f5"/>
+				<textFieldExpression><![CDATA[$P{Proprietario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="32" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="2" width="100" height="20" uuid="eccd930a-920d-4743-bafe-762e12bb5d04"/>
+				<text><![CDATA[Mês]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="2" width="100" height="20" uuid="e10ab4ad-e273-4abc-81ae-1badc7c9f087"/>
+				<text><![CDATA[km_rodados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="2" width="100" height="20" uuid="38049ab4-0c94-4938-950c-2d1e09c1ff51"/>
+				<text><![CDATA[litros_gastos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="2" width="100" height="20" uuid="5b4d4e18-a569-4dd1-84de-d3b9266129a5"/>
+				<text><![CDATA[media]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="2" width="100" height="20" uuid="98897098-89f1-4d7f-bc0c-76c85dc8dc7f"/>
+				<text><![CDATA[placa]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="2411f4bc-2f8f-488c-80e1-753d428e7bca"/>
+				<textFieldExpression><![CDATA[$F{km_rodados}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="b1ff6db4-42aa-4364-9a46-7c445fe78302"/>
+				<textFieldExpression><![CDATA[$F{litros_gastos}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="300" y="0" width="100" height="20" uuid="aa44a155-3036-4866-8d6b-fcf9fb5e9e3b"/>
+				<textFieldExpression><![CDATA[$F{media}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="11d49b9d-8569-44a3-855b-8a4f6c958ac5"/>
+				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="176dead3-7df7-446e-bec7-398067ff307e"/>
+				<textFieldExpression><![CDATA[$V{mesToString}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

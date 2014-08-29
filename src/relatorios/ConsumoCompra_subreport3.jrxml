@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ConsumoCompra_subreport3" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="4f2fb7ab-af42-4dfe-bece-07883c2919a9">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Data1" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Data2" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+sum(e.qtde_litros) as litros_comprados, p.nome as nome_comprador, e.mes
+from entrada e
+inner join proprietario p
+on e.idproprietario = p.idproprietario
+where e.data between $P{Data1} and $P{Data2}
+group by p.nome, e.mes]]>
+	</queryString>
+	<field name="litros_comprados" class="java.lang.Double"/>
+	<field name="nome_comprador" class="java.lang.String"/>
+	<field name="mes" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="mesToString" class="java.lang.String">
+		<variableExpression><![CDATA[$F{mes}.equals(1) ? "Jan" : $F{mes}.equals(2) ? "Fev" : 
+$F{mes}.equals(3) ? "Mar" :
+$F{mes}.equals(4) ? "Abr" : $F{mes}.equals(5) ? "Mai" :
+$F{mes}.equals(6) ? "Jun" : $F{mes}.equals(7) ? "Jul" :
+$F{mes}.equals(8) ? "Ago" : $F{mes}.equals(9) ? "Set" :
+$F{mes}.equals(10) ? "Out": $F{mes}.equals(11) ? "Nov" :
+$F{mes}.equals(12) ? "Dez" : ""]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="32ec8a45-2f72-44e1-93d1-9bc264313b33"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mês]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="20" uuid="d3067582-212b-40cc-a2a7-023f4711649d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comprador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="20" uuid="7ade9f7e-378e-43b9-bcc3-b05dfdd18938"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Litros Comprados]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="c0089106-6277-4677-a424-00524260870b"/>
+				<textFieldExpression><![CDATA[$F{nome_comprador}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="b70b0892-e099-48f4-bfb7-736022a8f8dc"/>
+				<textFieldExpression><![CDATA[$F{litros_comprados}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="a223a6e0-92db-4b39-9ee3-aa9bfcd40573"/>
+				<textFieldExpression><![CDATA[$V{mesToString}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

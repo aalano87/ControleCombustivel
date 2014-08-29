@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d44884a5-5ccc-4e10-9a88-dbcd757118d3">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Data1" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Data2" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Proprietario" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select a.id as a_id, a.data as a_data, a.litros as a_litros, a.motorista as a_motorista, a.km as a_km, a.horas as a_hs, v.idveiculo as v_idveiculo, v.idproprietario as v_idproprietario, v.placa as v_placa, v.tipo as v_tipo, p.idproprietario as p_idproprietario, p.nome as p_nome, e.valor_unitario as e_valor_unitario
+
+from abastecimento a
+inner join veiculo v
+on a.idveiculo = v.idveiculo
+inner join proprietario p
+on v.idproprietario = p.IDPROPRIETARIO,
+entrada e
+where a.data between  $P{Data1} and $P{Data2}
+and v.idproprietario = p.idproprietario
+and p.nome like $P{Proprietario}
+group by a.id order by a.data]]>
+	</queryString>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="a_data" class="java.sql.Timestamp"/>
+	<field name="a_litros" class="java.lang.Float"/>
+	<field name="a_motorista" class="java.lang.String"/>
+	<field name="a_km" class="java.lang.Integer"/>
+	<field name="a_hs" class="java.lang.Integer"/>
+	<field name="v_idveiculo" class="java.lang.Integer"/>
+	<field name="v_idproprietario" class="java.lang.Integer"/>
+	<field name="v_placa" class="java.lang.String"/>
+	<field name="v_tipo" class="java.lang.String"/>
+	<field name="p_idproprietario" class="java.lang.Integer"/>
+	<field name="p_nome" class="java.lang.String"/>
+	<field name="e_valor_unitario" class="java.lang.Double"/>
+	<variable name="litros_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{a_litros}]]></variableExpression>
+	</variable>
+	<variable name="total" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{p_nome}.equals("JJ THOMAZI") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $F{p_nome}.equals("ELTRANS") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $V{litros_1} * 2.42]]></variableExpression>
+	</variable>
+	<variable name="mediaVlrCompraDiesel" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{e_valor_unitario}]]></variableExpression>
+	</variable>
+	<variable name="mediaKMmLitro" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{v_placa}.equals($F{v_placa}) ? $F{a_km} / $F{a_litros} : 0]]></variableExpression>
+	</variable>
+	<variable name="somaKm" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{v_placa}.equals($F{v_placa}) ? $F{a_km} : 0]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="101" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="24" width="555" height="35" uuid="83748661-71ac-4678-aeae-2521fcb846e3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Relatório por Data e Proprietário]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="555" height="24" uuid="b429e24f-4d6c-47aa-904a-0b65db38f2a5"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="60" width="46" height="20" uuid="ecb27856-6b2c-4f47-a9f9-0ee8df622e6f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="46" y="60" width="77" height="20" uuid="20e86619-bc00-4ecc-b77d-a89f55cdb15c"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$P{Data1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="123" y="60" width="24" height="20" uuid="340891a2-7eb6-4cdf-a6bc-7694ec35ef55"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[até]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="147" y="60" width="100" height="20" uuid="9f28f48f-7539-456d-aee5-309ce4816359"/>
+				<textFieldExpression><![CDATA[$P{Data2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="80" width="65" height="20" uuid="c7e51649-bb6a-49e4-8258-16a0bf83d330"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Proprietário:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="65" y="80" width="116" height="20" uuid="1188cc9f-8c57-4158-a0fe-fa90e744b64b"/>
+				<textFieldExpression><![CDATA[$P{Proprietario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="46" height="20" uuid="19778518-aa5f-4e18-a35b-c4d38edbb319"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="47" y="0" width="100" height="20" uuid="9a5d4487-1e12-42cc-b748-d98dd2336016"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="147" y="0" width="80" height="20" uuid="0d442d76-c4de-4bfb-a175-3c88dc517083"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Litros]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="227" y="0" width="86" height="20" uuid="2aa19122-c76d-4db4-9a2f-34e272670f45"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Placa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="0" width="100" height="20" uuid="1991bd68-cdbd-4d94-9b83-3efc732aa6b4"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Motorista]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="313" y="0" width="88" height="20" uuid="01179cdb-a7db-472c-88b5-687ab360a57b"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Km/Hs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="501" y="0" width="100" height="20" uuid="cc916cc7-881e-40eb-b8af-02cf68a598f5"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Veículo]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField pattern="###0;-###0">
+				<reportElement x="313" y="0" width="88" height="14" uuid="2ecbbb3a-576d-49d6-816b-8d4bf4a691ec"/>
+				<textFieldExpression><![CDATA[$F{v_tipo}.equals("Máquina") ? $F{a_hs} : $F{a_km}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="46" height="14" uuid="289c5bce-e460-4d2d-89a3-80e26c4693f1"/>
+				<textFieldExpression><![CDATA[$F{a_id}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="47" y="0" width="100" height="14" uuid="e53255ec-2b79-4dcb-a790-78b026544747"/>
+				<textFieldExpression><![CDATA[$F{a_data}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="147" y="0" width="80" height="14" uuid="0966acea-d042-4892-a659-6dcea6565a52"/>
+				<textFieldExpression><![CDATA[$F{a_litros}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="227" y="0" width="86" height="14" uuid="77acbd31-fc7d-4f50-8667-0e2aca3d3a21"/>
+				<textFieldExpression><![CDATA[$F{v_placa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="401" y="0" width="100" height="14" uuid="71175391-541c-45fd-b61d-dd013fde645e"/>
+				<textFieldExpression><![CDATA[$F{a_motorista}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="501" y="0" width="100" height="14" uuid="2efac3cc-60bd-49d7-ab71-82a311a519e9"/>
+				<textFieldExpression><![CDATA[$F{v_tipo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="34" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="56" splitType="Stretch">
+			<textField>
+				<reportElement x="435" y="34" width="80" height="20" uuid="b706623e-7acf-4f37-a6e1-9ea68cff6e06"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="34" width="40" height="20" uuid="95790c44-9e05-4bf8-8a40-db81e9b52869"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="49" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="3" width="147" height="17" uuid="b539e878-215a-4f14-8eb3-cd5c67ef16a6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de litros]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="147" y="3" width="70" height="17" uuid="50525dc7-0b5e-4164-8bac-741fb1da534f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{litros_1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="f80c7ceb-f8c7-48bf-8583-50b21b475165"/>
+			</line>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="a4b03a4e-ba14-495c-8e78-0f5c21372ed7"/>
+			</line>
+			<textField pattern="#,##0.00">
+				<reportElement x="401" y="3" width="90" height="15" uuid="a8b135be-6284-4806-b462-1debc1d4c010"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="313" y="3" width="88" height="15" uuid="d2a40e87-cc30-4a7d-9257-ff99ca36855f"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total R$]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

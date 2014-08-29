@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ConsumoCompra_subreport4" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="da7bb9bb-90ff-4853-b64a-4e7747e6dd93">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="Data1" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Data2" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select sum(a.litros) as litros_consumidos, a.data, p.nome from abastecimento a
+inner join veiculo v 
+on a.IDVEICULO = v.IDVEICULO 
+inner join proprietario p 
+on v.IDPROPRIETARIO = p.idproprietario
+where a.data between $P{Data1} and $P{Data2} and p.idproprietario between 2 and 3
+group by a.mes, p.nome]]>
+	</queryString>
+	<field name="litros_consumidos" class="java.lang.Double"/>
+	<field name="data" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nome" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="6477d3ab-d39d-4804-8eb1-6127d3202b66"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Litros Consumidos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="f081596b-480d-4c16-9e11-09087a9f496c"/>
+				<textFieldExpression><![CDATA[$F{litros_consumidos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
