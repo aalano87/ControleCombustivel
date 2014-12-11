@@ -2,10 +2,11 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f83c300b-f95c-4e30-8497-b1fb10c24ace">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="192"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="Proprietario" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="Logo" class="java.awt.Image"/>
 	<queryString>
 		<![CDATA[SELECT
      abastecimento.`id` AS abastecimento_id,
@@ -25,8 +26,8 @@
      proprietario.`idproprietario` AS proprietario_idproprietario,
      proprietario.`nome` AS proprietario_nome
 FROM
-     `veiculo` veiculo INNER JOIN `abastecimento` abastecimento ON veiculo.`IDVEICULO` = abastecimento.`idveiculo`
-     INNER JOIN `proprietario` proprietario ON veiculo.`IDPROPRIETARIO` = proprietario.`idproprietario`
+     `VEICULO` veiculo INNER JOIN `ABASTECIMENTO` abastecimento ON veiculo.`IDVEICULO` = abastecimento.`idveiculo`
+     INNER JOIN `PROPRIETARIO` proprietario ON veiculo.`IDPROPRIETARIO` = proprietario.`idproprietario`
 where proprietario.nome like $P{Proprietario}
 group by veiculo.veiculo, abastecimento.mes
 order by abastecimento.mes, veiculo.placa]]>
@@ -57,27 +58,31 @@ order by abastecimento.mes, veiculo.placa]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch">
+		<band height="88" splitType="Stretch">
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement x="0" y="0" width="555" height="20" uuid="84b9a73a-3c69-49af-92f0-2454e6d1cba7"/>
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="20" width="555" height="59" uuid="7bd74c2e-22e5-4d04-8e46-55a66290a597"/>
+				<reportElement x="0" y="20" width="555" height="68" uuid="7bd74c2e-22e5-4d04-8e46-55a66290a597"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Relatório Abastecimentos]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="71" y="59" width="100" height="20" uuid="b25307a1-67c0-4d96-bc69-c41a7a9abb04"/>
+				<reportElement x="71" y="67" width="100" height="20" uuid="b25307a1-67c0-4d96-bc69-c41a7a9abb04"/>
 				<textFieldExpression><![CDATA[$P{Proprietario}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="59" width="100" height="20" uuid="6dfbfafc-1de7-4e4e-b4ab-da816f3b9cef"/>
+				<reportElement x="0" y="67" width="100" height="20" uuid="6dfbfafc-1de7-4e4e-b4ab-da816f3b9cef"/>
 				<text><![CDATA[Proprietário:]]></text>
 			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="115" height="48" uuid="37d1cb96-8d78-4198-8131-58056a3487d8"/>
+				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<columnHeader>

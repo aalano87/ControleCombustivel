@@ -24,6 +24,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import verificacao.Redimensionar;
 
 /**
  *
@@ -113,7 +114,7 @@ public class DialogRelatorioAbastecimentoProprietario extends javax.swing.JDialo
         );
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel4.setText("Relatório Data e Proprietário");
+        jLabel4.setText("Relatório Proprietário");
         jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         lbLogo.setText("jLabel5");
@@ -221,16 +222,16 @@ public class DialogRelatorioAbastecimentoProprietario extends javax.swing.JDialo
     
      public void data() throws SQLException, ExcecaoConexao, ExcecaoSQL {
         try {
-             InputStream is = getClass().getResourceAsStream("/relatorios/Abastecimentos.jasper");
-           // JasperReport jr = (JasperReport) JRLoader.loadObject(getClass().getResource("/Relatorios/data.jasper"));
-            
+            InputStream is = getClass().getResourceAsStream("/relatorios/Abastecimentos.jasper");
             HashMap map = new HashMap();
             String proprietario = cbProprietario.getSelectedItem().toString();
+            ImageIcon gto = new ImageIcon(getClass().getResource("/icon/logo2.jpg"));  
             map.put("Proprietario", proprietario);
+            map.put("Logo", gto.getImage());
             JasperPrint rel = JasperFillManager.fillReport(is, map, conexao.Conexao.getConnection());
             JasperViewer viewer = new JasperViewer(rel, false);
             viewer.setLocationRelativeTo(null);
-            viewer.setExtendedState(MAXIMIZED_BOTH);
+            viewer.setSize(Redimensionar.redimensionarTela());
             viewer.setVisible(true);
             viewer.setZoomRatio((float) 0.8);
         } catch (JRException erro) {

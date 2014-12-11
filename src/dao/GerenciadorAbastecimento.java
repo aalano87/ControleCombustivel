@@ -10,11 +10,14 @@ import excecao.ExcecaoSQL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import model.Abastecimento;
 import model.Proprietario;
 import model.Veiculo;
+import sessao.Sessao;
 
 /**
  *
@@ -22,10 +25,16 @@ import model.Veiculo;
  */
 public class GerenciadorAbastecimento {
 
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+    
     public void inserir(Abastecimento abastecimento) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO ABASTECIMENTO (DATA, MOTORISTA, KM ,HORAS, LITROS, IDVEICULO) "
-                + "VALUES (?, ?, ?, ?, ?, ?);";
+                = "INSERT INTO ABASTECIMENTO (DATA, MOTORISTA, KM ,HORAS, LITROS, IDVEICULO, MODIFICADO) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(abastecimento.getData().getTime()));
@@ -34,6 +43,7 @@ public class GerenciadorAbastecimento {
             ps.setInt(4, abastecimento.getHoras());
             ps.setFloat(5, abastecimento.getLitros());
             ps.setInt(6, abastecimento.getVeiculo().getId());
+            ps.setString(7, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -43,7 +53,7 @@ public class GerenciadorAbastecimento {
 
     public void atualizar(Abastecimento abastecimento) throws ExcecaoSQL, ExcecaoConexao {
         String sql = "UPDATE ABASTECIMENTO SET DATA = ?, MOTORISTA = ?, "
-                + "KM = ?, HORAS = ?, LITROS = ? "
+                + "KM = ?, HORAS = ?, LITROS = ?, MODIFICADO = ? "
                 + " WHERE ID = ? ";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -52,7 +62,8 @@ public class GerenciadorAbastecimento {
             ps.setInt(3, abastecimento.getKm());
             ps.setInt(4, abastecimento.getHoras());
             ps.setFloat(5, abastecimento.getLitros());
-            ps.setInt(6, abastecimento.getId());
+            ps.setString(6, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+            ps.setInt(7, abastecimento.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -74,7 +85,7 @@ public class GerenciadorAbastecimento {
 
     public ArrayList<Abastecimento> obterTodos() throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM ABASTECIMENTO A, VEICULO V, PROPRIETARIO P WHERE A.IDVEICULO = V.IDVEICULO "
-                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO ORDER BY ID;";
+                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO ORDER BY ID DESC;";
         ResultSet rs = null;
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -88,7 +99,7 @@ public class GerenciadorAbastecimento {
     
       public ArrayList<Abastecimento> pesquisaProprietario(String proprietario) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM ABASTECIMENTO A, VEICULO V, PROPRIETARIO P WHERE A.IDVEICULO = V.IDVEICULO "
-                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND P.NOME LIKE ? ;";
+                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND P.NOME LIKE ? ORDER BY A.DATA DESC ;";
         ResultSet rs = null;
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -103,8 +114,9 @@ public class GerenciadorAbastecimento {
       
       public ArrayList<Abastecimento> pesquisaPlaca(String placa) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM ABASTECIMENTO A, VEICULO V, PROPRIETARIO P WHERE A.IDVEICULO = V.IDVEICULO "
-                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND V.PLACA LIKE ? ;";
+                + " AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND V.PLACA LIKE ? ORDER BY A.DATA DESC";//" +"%"+placa+"%'";
         ResultSet rs = null;
+        //ResultSet rs = conexao.Conexao.executeSQL(sql);
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, "%" + placa + "%");
@@ -117,7 +129,7 @@ public class GerenciadorAbastecimento {
     }
        public ArrayList<Abastecimento> pesquisaData(Date dataInicio, Date dataFim) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM ABASTECIMENTO A, VEICULO V, PROPRIETARIO P WHERE A.IDVEICULO = V.IDVEICULO "
-                + "AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND DATA BETWEEN ? AND ? ORDER BY ID;";
+                + "AND V.IDPROPRIETARIO = P.IDPROPRIETARIO AND DATA BETWEEN ? AND ? ORDER BY A.DATA DESC;";
         ResultSet rs = null;
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -256,6 +268,7 @@ public class GerenciadorAbastecimento {
             p.setNome(rs.getString("P.NOME"));
             v.setProprietario(p);
             obj.setVeiculo(v);
+            obj.setModificado(rs.getString("A.MODIFICADO"));
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Campos inexistentes da tabela de banco de dados.\n"
                     + "Msg: " + ex.getMessage(), ex.getCause());
@@ -264,35 +277,35 @@ public class GerenciadorAbastecimento {
     }
 
     public int lastID() throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT MAX(ID) as id FROM abastecimento";
+        String sql = "SELECT MAX(ID) AS ID FROM ABASTECIMENTO";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        int lastId = rs.getInt("id");
+        int lastId = rs.getInt("ID");
         rs.close();
         stmt.close();
         return lastId + 1;
     }
 
     public double MediaKM(String placa) throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT (MAX(KM) - MIN(KM)) / SUM(LITROS) as media FROM abastecimento a, veiculo v where km > 0 and a.idveiculo = v.idveiculo and v.placa like ? ";
+        String sql = "SELECT (MAX(KM) - MIN(KM)) / SUM(LITROS) AS MEDIA FROM ABASTECIMENTO A, VEICULO V WHERE KM > 0 AND A.IDVEICULO = V.IDVEICULO AND V.PLACA LIKE ? ";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         stmt.setString(1, "%" + placa + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double mediaKm = rs.getDouble("media");
+        double mediaKm = rs.getDouble("MEDIA");
         rs.close();
         stmt.close();
         return mediaKm;
     }
     
     public double MediaHS(String placa) throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT SUM(LITROS) / (MAX(HORAS) - MIN(HORAS))  as media FROM abastecimento a, veiculo v where horas > 0 and a.idveiculo = v.idveiculo and v.placa like ? ";
+        String sql = "SELECT SUM(LITROS) / (MAX(HORAS) - MIN(HORAS))  AS MEDIA FROM ABASTECIMENTO A, VEICULO V WHERE HORAS > 0 AND A.IDVEICULO = V.IDVEICULO AND V.PLACA LIKE ? ";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         stmt.setString(1, "%" + placa + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double mediaHs = rs.getDouble("media");
+        double mediaHs = rs.getDouble("MEDIA");
         rs.close();
         stmt.close();
         return mediaHs;
@@ -300,8 +313,10 @@ public class GerenciadorAbastecimento {
     
     public boolean ValorExistente(Date data, String placa, float litros) throws ExcecaoSQL, SQLException, ExcecaoConexao {
         boolean result = true;
-        String sql = "select abastecimento.data, veiculo.placa, abastecimento.litros from abastecimento, "
-                + "veiculo where abastecimento.data like '" + data + "' and veiculo.placa like '" + placa + "' and abastecimento.litros like '" + litros + "'";
+        String sql = "SELECT ABASTECIMENTO.DATA, VEICULO.PLACA, ABASTECIMENTO.LITROS FROM ABASTECIMENTO, "
+                + "VEICULO WHERE ABASTECIMENTO.DATA LIKE '" + data + "' AND VEICULO.PLACA LIKE '" + placa + 
+                "' AND ABASTECIMENTO.LITROS LIKE '" + litros + "'"
+;
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
@@ -320,11 +335,11 @@ public class GerenciadorAbastecimento {
     
     public float getLitrosEntrada() throws ExcecaoConexao,SQLException, ExcecaoConexao, ExcecaoSQL {
        float result = 0;
-        String sql = "select SUM(QTDE_LITROS) as qtde_litros from entrada";
+        String sql = "SELECT SUM(QTDE_LITROS) AS QTDE_LITROS FROM ENTRADA";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
-            result = rs.getFloat("qtde_litros");
+            result = rs.getFloat("QTDE_LITROS");
             return result;
         }
         return 0;
@@ -332,11 +347,11 @@ public class GerenciadorAbastecimento {
       
     public float getLitrosSaida() throws ExcecaoConexao,SQLException, ExcecaoConexao, ExcecaoSQL {
        float result = 0;
-        String sql = "select SUM(LITROS)as litros from abastecimento";
+        String sql = "SELECT SUM(LITROS) AS LITROS FROM ABASTECIMENTO";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
-            result = rs.getFloat("litros");
+            result = rs.getFloat("LITROS");
             return result;
         }
         return 0;

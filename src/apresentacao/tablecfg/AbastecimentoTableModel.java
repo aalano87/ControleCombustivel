@@ -54,7 +54,7 @@ public class AbastecimentoTableModel extends AbstractTableModel {
             case 4:
                 return abastecimento.getMotorista();
             case 5:
-                        if (abastecimento.getVeiculo().getTipo().equals("Máquina")){
+                        if (abastecimento.getVeiculo().getTipo().equals("MÁQUINA")){
                         return abastecimento.getHoras();
                         }else 
                             return abastecimento.getKm();
@@ -62,6 +62,8 @@ public class AbastecimentoTableModel extends AbstractTableModel {
                 return abastecimento.getLitros();
             case 7:
                 return abastecimento.getVeiculo().getProprietario();
+            case 8: 
+                return abastecimento.getModificado();
         }
         return null;
     }
@@ -73,7 +75,7 @@ public class AbastecimentoTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 9;
     }
 
     public Abastecimento getValoresAbastecimento(int rowIndex) {

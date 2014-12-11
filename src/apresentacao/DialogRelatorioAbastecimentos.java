@@ -195,13 +195,13 @@ public class DialogRelatorioAbastecimentos extends javax.swing.JDialog {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btFechar)
                 .addContainerGap())
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relatório  de Abastecimentos", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 18))); // NOI18N
 
         buttonGroup1.add(rbProprietario);
         rbProprietario.setSelected(true);
@@ -252,7 +252,6 @@ public class DialogRelatorioAbastecimentos extends javax.swing.JDialog {
         tfTotalLitros.setEditable(false);
         tfTotalLitros.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         tfTotalLitros.setText("jTextField2");
-        tfTotalLitros.setOpaque(false);
 
         buttonGroup1.add(rbPlaca);
         rbPlaca.setText("Placa");
@@ -286,21 +285,21 @@ public class DialogRelatorioAbastecimentos extends javax.swing.JDialog {
                         .addComponent(tfPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(35, 35, 35)
+                                .addGap(44, 44, 44)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(tfMedia, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel2)
                                 .addGap(18, 18, 18)
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 443, Short.MAX_VALUE)
+                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 378, Short.MAX_VALUE)
                                 .addComponent(btPesquisar)))
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -541,9 +540,9 @@ public class DialogRelatorioAbastecimentos extends javax.swing.JDialog {
         try {
             Veiculo aux = gv.obterVeiculo(tfPesquisa.getText());
             NumberFormat nf = new DecimalFormat("0.00");
-            if (aux.getTipo().equals("Máquina")) {
+            if (aux.getTipo().equalsIgnoreCase("Máquina")) {
                 tfMedia.setText(nf.format(ga.MediaHS(tfPesquisa.getText())));
-            } else if (aux.getTipo().equals("Caminhão")) {
+            } else if (aux.getTipo().equalsIgnoreCase("Caminhão")) {
                 tfMedia.setText(nf.format(ga.MediaKM(tfPesquisa.getText())));
             }
 

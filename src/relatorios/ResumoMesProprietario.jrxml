@@ -16,11 +16,11 @@
 		<![CDATA[select a.mes as mes, (max(a.km) - min(a.km)) as km_rodados, sum(a.litros) as litros_gastos,
 (max(a.km) - min(a.km)) / sum(a.litros) as media, v.placa as placa
 from ABASTECIMENTO a
-inner join veiculo v
+inner join VEICULO v
 on a.idveiculo = v.idveiculo
-inner join proprietario p
+inner join PROPRIETARIO p
 on v.IDPROPRIETARIO = p.idproprietario
-where a.km > 0 and v.tipo like "Caminhão" and p.nome like $P{Proprietario} and a.data between $P{Data1} and $P{Data2}
+where a.km > 0 and v.tipo like "CAMINHÃO" and p.nome like $P{Proprietario} and a.data between $P{Data1} and $P{Data2}
 group by a.mes, v.placa]]>
 	</queryString>
 	<field name="mes" class="java.lang.Integer">

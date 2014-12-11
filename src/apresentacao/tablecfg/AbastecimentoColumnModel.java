@@ -45,6 +45,7 @@ public class AbastecimentoColumnModel extends DefaultTableColumnModel{
         addColumn(criaColuna(4, 25 * letra, fm, false, "Motorista"));
         addColumn(criaColuna(5, 10 * digito, fm, false, "Km/Hs"));
         addColumn(criaColuna(6, 10 * digito, fm, false, "Litros"));
-        addColumn(criaColuna(7, 30 * letra, fm, true, "Proprietário"));
+        addColumn(criaColuna(7, 25 * letra, fm, true, "Proprietário"));
+        addColumn(criaColuna(8, 30 * letra, fm, true, "Última alteração"));
     } 
 }

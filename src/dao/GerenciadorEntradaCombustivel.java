@@ -10,9 +10,14 @@ import excecao.ExcecaoSQL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import model.EntradaCombustivel;
+import model.Fornecedor;
 import model.Proprietario;
+import sessao.Sessao;
 
 /**
  *
@@ -20,38 +25,47 @@ import model.Proprietario;
  */
 public class GerenciadorEntradaCombustivel {
 
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
     public void inserir(EntradaCombustivel entradaCombustivel) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO ENTRADA (DATA, NF, FORNECEDOR, IDPROPRIETARIO, QTDE_LITROS, VALOR_UNITARIO) "
-                + "VALUES (?, ?, ?, ?, ?, ?);";
+                = "INSERT INTO ENTRADA (DATA, NF, IDFORNECEDOR, IDPROPRIETARIO, QTDE_LITROS, "
+                + "VALOR_UNITARIO, MODIFICADO) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(entradaCombustivel.getData().getTime()));
             ps.setString(2, entradaCombustivel.getNf());
-            ps.setString(3, entradaCombustivel.getFornecedor());
+            ps.setInt(3, entradaCombustivel.getFornecedor().getIdFornecedor());
             ps.setInt(4, entradaCombustivel.getProprietario().getId());
             ps.setDouble(5, entradaCombustivel.getQtdeLitros());
             ps.setDouble(6, entradaCombustivel.getValorUnitario());
+            ps.setString(7, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
                     + "[" + sql + "]\n" + ex.getMessage(), ex.getCause());
-            
+
         }
     }
 
     public void atualizar(EntradaCombustivel entradaCombustivel) throws ExcecaoSQL, ExcecaoConexao {
         String sql = "UPDATE ENTRADA SET DATA = ?, IDPROPRIETARIO = ?, "
-                + "QTDE_LITROS = ?, VALOR_UNITARIO = ?"
-                + " WHERE NF = ? AND FORNECEDOR = ?";
+                + "QTDE_LITROS = ?, VALOR_UNITARIO = ?, MODIFICADO = ?"
+                + " WHERE NF = ? AND IDFORNECEDOR = ?";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(entradaCombustivel.getData().getTime()));
             ps.setInt(2, entradaCombustivel.getProprietario().getId());
             ps.setDouble(3, entradaCombustivel.getQtdeLitros());
             ps.setDouble(4, entradaCombustivel.getValorUnitario());
-            ps.setString(5, entradaCombustivel.getNf());
-            ps.setString(6, entradaCombustivel.getFornecedor());
+            ps.setString(5, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+            ps.setString(6, entradaCombustivel.getNf());
+            ps.setInt(7, entradaCombustivel.getFornecedor().getIdFornecedor());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -72,9 +86,10 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public ArrayList<EntradaCombustivel> obterTodos() throws ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P "
-                + "WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO"
-                + " ORDER BY DATA;";
+        String sql = "SELECT * FROM ENTRADA E "
+                + "LEFT JOIN PROPRIETARIO P ON P.IDPROPRIETARIO = E.IDPROPRIETARIO "
+                + "LEFT JOIN FORNECEDOR F ON F.IDFORNECEDOR = E.IDFORNECEDOR "
+                + "ORDER BY E.IDENTRADA DESC;";
         ResultSet rs = null;
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -101,7 +116,8 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public EntradaCombustivel obterEntradaCombustivel(String nf) throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO AND NF = ?;";
+        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P, FORNECEDOR F WHERE "
+                + "E.IDFORNECEDOR = F.IDFORNECEDOR AND E.IDPROPRIETARIO = P.IDPROPRIETARIO AND NF = ?;";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, nf);
@@ -119,8 +135,9 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public ArrayList<EntradaCombustivel> pesquisaFornecedor(String fornecedor) throws ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO "
-                + "AND FORNECEDOR LIKE ? ORDER BY DATA;";
+        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P, FORNECEDOR F WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO "
+                + "AND E.IDFORNECEDOR = F.IDFORNECEDOR "
+                + "AND F.NOME LIKE ? ORDER BY DATA;";
         ResultSet rs = null;
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -134,8 +151,9 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public ArrayList<EntradaCombustivel> pesquisaComprador(String comprador) throws ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P "
+        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P, FORNECEDOR F "
                 + "WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO "
+                + "AND E.IDFORNECEDOR = F.IDFORNECEDOR "
                 + "AND P.NOME LIKE ? ORDER BY DATA;";
         ResultSet rs = null;
         try {
@@ -150,8 +168,8 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public ArrayList<EntradaCombustivel> pesquisaData(java.util.Date dataInicio, java.util.Date dataFim) throws ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P "
-                + "WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO  "
+        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P, FORNECEDOR F "
+                + "WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO AND E.IDFORNECEDOR = F.IDFORNECEDOR "
                 + "AND DATA BETWEEN ? AND ? ORDER BY DATA ;";
         ResultSet rs = null;
         try {
@@ -167,7 +185,8 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public EntradaCombustivel obterEntradaCombustivel() throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO;";
+        String sql = "SELECT * FROM ENTRADA E, PROPRIETARIO P, FORNECEDOR F WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO"
+                + " AND E.IDFORNECEDOR = F.IDFORNECEDOR;";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -190,16 +209,23 @@ public class GerenciadorEntradaCombustivel {
             Proprietario p = new Proprietario();
             p.setId(rs.getInt("P.IDPROPRIETARIO"));
             p.setNome(rs.getString("P.NOME"));
+            p.setDocumento(rs.getString("P.DOCUMENTO"));
             obj.setProprietario(p);
             if (rs.getDate("E.DATA") != null) {
                 obj.setData(new java.util.Date(rs.getDate("E.DATA").getTime()));
             } else {
                 obj.setData(null);
             }
-            obj.setFornecedor(rs.getString("E.FORNECEDOR"));
+            Fornecedor f = new Fornecedor();
+            f.setIdFornecedor(rs.getInt("F.IDFORNECEDOR"));
+            f.setNome(rs.getString("F.NOME"));
+            f.setCnpj(rs.getString("F.CNPJ"));
+            f.setModificado(rs.getString("F.MODIFICADO"));
+            obj.setFornecedor(f);
             obj.setNf(rs.getString("E.NF"));
             obj.setQtdeLitros(rs.getDouble("E.QTDE_LITROS"));
             obj.setValorUnitario(rs.getDouble("E.VALOR_UNITARIO"));
+            obj.setModificado(rs.getString("E.MODIFICADO"));
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Campos inexistentes da tabela de banco de dados.\n"
                     + "Msg: " + ex.getMessage(), ex.getCause());
@@ -208,11 +234,11 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public int lastID() throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT MAX(IDENTRADA) as identrada FROM entradaCombustivel";
+        String sql = "SELECT MAX(IDENTRADA) AS IDENTRADA FROM ENTRADACOMBUSTIVEL";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        int lastId = rs.getInt("identrada");
+        int lastId = rs.getInt("IDENTRADA");
         rs.close();
         stmt.close();
         return lastId + 1;
@@ -220,7 +246,7 @@ public class GerenciadorEntradaCombustivel {
 
     public boolean ValorExistente(String nf, String fornecedor) throws ExcecaoSQL, SQLException, ExcecaoConexao {
         boolean result = true;
-        String sql = "select nf, fornecedor from entrada where nf like '" + nf + "' and fornecedor like '" + fornecedor + "' ";
+        String sql = "SELECT E.NF, F.NOME FROM ENTRADA E, FORNECEDOR F WHERE E.NF LIKE '" + nf + "' AND F.NOME LIKE '" + fornecedor + "' ";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
@@ -238,37 +264,39 @@ public class GerenciadorEntradaCombustivel {
     }
 
     public float totalLitrosFornecedor(String fornecedor) throws ExcecaoConexao, ExcecaoSQL, SQLException {
-        String sql = "SELECT SUM(QTDE_LITROS) FROM ENTRADA WHERE FORNECEDOR LIKE ? ;";
+        String sql = "SELECT SUM(QTDE_LITROS) FROM ENTRADA E INNER JOIN FORNECEDOR F "
+                + "WHERE E.IDFORNECEDOR = F.IDFORNECEDOR AND F.NOME LIKE ? ;";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         stmt.setString(1, "%" + fornecedor + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        float totalLitros = rs.getFloat("Sum(qtde_litros)");
+        float totalLitros = rs.getFloat("SUM(QTDE_LITROS)");
         rs.close();
         stmt.close();
         return totalLitros;
     }
 
     public double valorFornecedor(String fornecedor) throws ExcecaoConexao, ExcecaoSQL, SQLException {
-        String sql = "SELECT SUM(QTDE_LITROS * VALOR_UNITARIO) FROM ENTRADA WHERE FORNECEDOR LIKE ? ;";
+        String sql = "SELECT SUM(QTDE_LITROS * VALOR_UNITARIO) FROM ENTRADA E INNER JOIN FORNECEDOR F "
+                + "WHERE E.IDFORNECEDOR = F.IDFORNECEDOR AND F.NOME LIKE ? ;";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         stmt.setString(1, "%" + fornecedor + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double valorTotal = rs.getDouble("Sum(qtde_litros * valor_unitario)");
+        double valorTotal = rs.getDouble("SUM(QTDE_LITROS * VALOR_UNITARIO)");
         rs.close();
         stmt.close();
         return valorTotal;
     }
 
     public float totalLitrosComprador(String comprador) throws ExcecaoConexao, ExcecaoSQL, SQLException {
-        String sql = "SELECT SUM(QTDE_LITROS) AS litros FROM ENTRADA E, PROPRIETARIO P WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO"
+        String sql = "SELECT SUM(QTDE_LITROS) AS LITROS FROM ENTRADA E, PROPRIETARIO P WHERE E.IDPROPRIETARIO = P.IDPROPRIETARIO"
                 + " AND P.NOME LIKE ?;";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         stmt.setString(1, "%" + comprador + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        float totalLitros = rs.getFloat("litros");
+        float totalLitros = rs.getFloat("LITROS");
         rs.close();
         stmt.close();
         return totalLitros;
@@ -282,7 +310,7 @@ public class GerenciadorEntradaCombustivel {
         stmt.setString(1, "%" + comprador + "%");
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double valorTotal = rs.getDouble("Sum(qtde_litros * valor_unitario)");
+        double valorTotal = rs.getDouble("SUM(QTDE_LITROS * VALOR_UNITARIO)");
         rs.close();
         stmt.close();
         return valorTotal;
@@ -293,7 +321,7 @@ public class GerenciadorEntradaCombustivel {
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        float totalLitros = rs.getFloat("Sum(qtde_litros)");
+        float totalLitros = rs.getFloat("SUM(QTDE_LITROS)");
         rs.close();
         stmt.close();
         return totalLitros;
@@ -304,7 +332,7 @@ public class GerenciadorEntradaCombustivel {
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double valorTotal = rs.getDouble("Sum(qtde_litros * valor_unitario)");
+        double valorTotal = rs.getDouble("SUM(QTDE_LITROS * VALOR_UNITARIO)");
         rs.close();
         stmt.close();
         return valorTotal;
@@ -317,7 +345,7 @@ public class GerenciadorEntradaCombustivel {
         stmt.setDate(2, new java.sql.Date(dataFim.getTime()));
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double totalLitros = rs.getDouble("Sum(qtde_litros)");
+        double totalLitros = rs.getDouble("SUM(QTDE_LITROS)");
         rs.close();
         stmt.close();
         return totalLitros;
@@ -330,7 +358,7 @@ public class GerenciadorEntradaCombustivel {
         stmt.setDate(2, new java.sql.Date(dataFim.getTime()));
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        double valorTotal = rs.getDouble("Sum(qtde_litros * valor_unitario)");
+        double valorTotal = rs.getDouble("SUM(QTDE_LITROS * VALOR_UNITARIO)");
         rs.close();
         stmt.close();
         return valorTotal;

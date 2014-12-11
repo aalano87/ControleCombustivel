@@ -16,11 +16,12 @@ import java.util.Objects;
 public class EntradaCombustivel {
    private Date data;
    private String nf;
-   private String fornecedor;
    private Proprietario proprietario;
    private double qtdeLitros;
    private double valorUnitario;
    private int id;
+   private Fornecedor fornecedor;
+   private String modificado;
 
     @Override
     public int hashCode() {
@@ -60,16 +61,6 @@ public class EntradaCombustivel {
         this.nf = nf;
     }
 
-    public String getFornecedor() {
-        return fornecedor;
-    }
-
-    public void setFornecedor(String fornecedor) {
-        this.fornecedor = fornecedor;
-    }
-
-   
-
     public double getQtdeLitros() {
         return qtdeLitros;
     }
@@ -100,5 +91,21 @@ public class EntradaCombustivel {
 
     public void setProprietario(Proprietario proprietario) {
         this.proprietario = proprietario;
+    }
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
+    }
+
+    public String getModificado() {
+        return modificado;
+    }
+
+    public void setModificado(String modificado) {
+        this.modificado = modificado;
     }
 }

@@ -38,11 +38,12 @@ public class VeiculoColumnModel extends DefaultTableColumnModel{
     public VeiculoColumnModel(FontMetrics fm) {
         int digito = fm.stringWidth("0");
         int letra = fm.stringWidth("M");
-        addColumn(criaColuna(0, 5 * digito, fm, false, "Código"));
+        addColumn(criaColuna(0, 10 * digito, fm, false, "Código"));
         addColumn(criaColuna(1, 18 * letra, fm, false, "Tipo"));
         addColumn(criaColuna(2, 9 * letra, fm, false, "Status"));
         addColumn(criaColuna(3, 20 * letra, fm, false, "Placa"));
         addColumn(criaColuna(4, 25 * letra, fm, false, "Veículo"));
         addColumn(criaColuna(5, 30 * letra, fm, true, "Proprietário"));
+        addColumn(criaColuna(6, 30 * letra, fm, true, "Última alteração"));
     } 
 }

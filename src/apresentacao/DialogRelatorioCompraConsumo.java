@@ -281,7 +281,7 @@ public class DialogRelatorioCompraConsumo extends javax.swing.JDialog {
     private void atualizarMes() {
         PreparedStatement ps; 
         try {
-            ps = Conexao.getConnection().prepareStatement("update entrada set mes = month(entrada.data);");
+            ps = Conexao.getConnection().prepareStatement("UPDATE ENTRADA SET MES = MONTH(ENTRADA.DATA);");
             ps.executeUpdate();
         } catch (ExcecaoConexao ex) {
             Logger.getLogger(DialogRelatorioCompraConsumo.class.getName()).log(Level.SEVERE, null, ex);

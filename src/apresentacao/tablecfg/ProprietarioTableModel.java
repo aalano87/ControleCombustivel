@@ -42,6 +42,10 @@ public class ProprietarioTableModel extends AbstractTableModel {
                 return proprietario.getId();
             case 1:
                 return proprietario.getNome();
+            case 2:
+                return proprietario.getDocumento();
+            case 3:
+                return proprietario.getModificado();
         }
         return null;
     }
@@ -53,7 +57,7 @@ public class ProprietarioTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 2;
+        return 4;
     }
 
     public Proprietario getValoresProprietario(int rowIndex) {

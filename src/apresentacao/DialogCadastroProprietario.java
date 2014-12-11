@@ -5,16 +5,22 @@
  */
 package apresentacao;
 
-import static apresentacao.FrmTelaPrincipal.redimensionarTela;
 import dao.GerenciadorProprietario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.text.MaskFormatter;
 import model.Proprietario;
+import verificacao.Redimensionar;
+import static verificacao.Redimensionar.redimensionarTela;
+import verificacao.SomenteNumero;
+import verificacao.ValidarCNPJ;
+import verificacao.ValidarCPF;
 
 /**
  *
@@ -24,7 +30,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
 
     private Proprietario obj = new Proprietario();
     private GerenciadorProprietario gerenciador = new GerenciadorProprietario();
-    
+
     /**
      * Creates new form CadastroVeiculo
      */
@@ -43,6 +49,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
 
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
+        btSalvar.setEnabled(false);
     }
 
     /**
@@ -67,7 +74,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         btCancelar = new javax.swing.JButton();
         btFechar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        tfCpfCnpj = new javax.swing.JTextField();
+        tfDocumento = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         lbLogo = new javax.swing.JLabel();
@@ -134,15 +141,26 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
 
         jLabel2.setText("Cpf/Cnpj:");
 
+        tfDocumento.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tfDocumentoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tfDocumentoFocusLost(evt);
+            }
+        });
+        tfDocumento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfDocumentoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,10 +174,12 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
                                 .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btPesquisar))
-                            .addComponent(tfNome)
-                            .addComponent(tfCpfCnpj, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(tfNome, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                            .addComponent(tfDocumento)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -176,14 +196,14 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(tfCpfCnpj, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(99, Short.MAX_VALUE))
         );
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel6.setText("Cadastro de Proprietários");
+        jLabel6.setText("Gerenciar Proprietários");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -196,8 +216,11 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
         );
 
+        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/relatorio.jpg"))); // NOI18N
         jMenu1.setText("Relatório");
+        jMenu1.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
 
+        jMenuItem1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem1.setText("Proprietários");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,26 +260,29 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
-        obj = this.getDados();
-        if (verificaNome(obj.getNome()) == false) {
-            try {
-                gerenciador.inserir(obj);
-                this.limparCampos();
-            } catch (ExcecaoConexao ex) {
-                JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
-                        + "Msg.: " + ex.getMessage(), "Cadastro de Autor", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExcecaoSQL ex) {
-                JOptionPane.showMessageDialog(this, "Falha durante a gravação do registro.\n"
-                        + "Msg.: " + ex.getMessage(), "Cadastro de Autor", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            JOptionPane.showMessageDialog(rootPane, "Dados salvos com sucesso!");
-            btSalvar.setEnabled(false);
+        if (verificaCampos()) {
+            JOptionPane.showMessageDialog(this, "Campos vazios preencha para prosseguir");
         } else {
-            JOptionPane.showMessageDialog(null, "Placa já cadastrada.");
+            obj = this.getDados();
+            if (verificaDocumento(obj.getDocumento()) == false) {
+                try {
+                    gerenciador.inserir(obj);
+                    this.limparCampos();
+                } catch (ExcecaoConexao ex) {
+                    JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
+                            + "Msg.: " + ex.getMessage(), "Cadastro de Proprietário", JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExcecaoSQL ex) {
+                    JOptionPane.showMessageDialog(this, "Falha durante a gravação do registro.\n"
+                            + "Msg.: " + ex.getMessage(), "Cadastro de Proprietário", JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                JOptionPane.showMessageDialog(rootPane, "Dados salvos com sucesso!");
+                btSalvar.setEnabled(false);
+            } else {
+                JOptionPane.showMessageDialog(null, "Proprietário já cadastrado.");
+            }
         }
-
     }//GEN-LAST:event_btSalvarActionPerformed
 
     private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
@@ -274,9 +300,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
                     + "Msg.: " + ex.getMessage(), "Cadastro de Proprietário", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ExcecaoSQL ex) {
-            JOptionPane.showMessageDialog(this, "Falha na pesquisa.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Proprietário", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, "Código não cadastrado!");
             return;
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(rootPane, "Digite um número para pesquisar.");
@@ -286,25 +310,29 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         } catch (NullPointerException ex) {
             return;
         }
-        btSalvar.setEnabled(false);
+        btSalvar.setVisible(false);
     }//GEN-LAST:event_btPesquisarActionPerformed
 
     private void btAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAtualizarActionPerformed
         obj = this.getDados();
-        try {
-            gerenciador.atualizar(obj);
-            this.limparCampos();
-        } catch (ExcecaoConexao ex) {
-            JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Veiculo", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExcecaoSQL ex) {
-            JOptionPane.showMessageDialog(this, "Falha durante a atualização dos dados no Banco de Dados.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Veiculo", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+        if (verificaCampos()) {
+            JOptionPane.showMessageDialog(this, "Campos vazios preencha para prosseguir");
+        } else {
+            try {
+                gerenciador.atualizar(obj);
+                this.limparCampos();
+            } catch (ExcecaoConexao ex) {
+                JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
+                        + "Msg.: " + ex.getMessage(), "Cadastro de Veiculo", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExcecaoSQL ex) {
+                JOptionPane.showMessageDialog(this, "Falha durante a atualização dos dados no Banco de Dados.\n"
+                        + "Msg.: " + ex.getMessage(), "Cadastro de Veiculo", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JOptionPane.showMessageDialog(null, "Dados Atualizados com sucesso!");
+            btSalvar.setEnabled(true);
         }
-        JOptionPane.showMessageDialog(null, "Dados Atualizados com sucesso!");
-        btSalvar.setEnabled(true);
     }//GEN-LAST:event_btAtualizarActionPerformed
 
     private void btFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFecharActionPerformed
@@ -335,12 +363,31 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         DialogRelatorioProprietario rp = new DialogRelatorioProprietario(null, true);
-        rp.setSize(redimensionarTela());
+        rp.setSize(Redimensionar.redimensionarTela());
         rp.setLocationRelativeTo(null);
         rp.dispose();
         rp.setUndecorated(true);
         rp.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void tfDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfDocumentoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfDocumentoActionPerformed
+
+    private void tfDocumentoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfDocumentoFocusGained
+        tfDocumento.setDocument(new SomenteNumero());
+    }//GEN-LAST:event_tfDocumentoFocusGained
+
+    private void tfDocumentoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfDocumentoFocusLost
+        if (tfDocumento.getText().length() < 11 || tfDocumento.getText().length() > 14) {
+            JOptionPane.showMessageDialog(this, "Verifique a quantidade de dígitos!");
+        } else if (tfDocumento.getText().length() == 11 && ValidarCPF.validaCPF(tfDocumento.getText()) 
+                || tfDocumento.getText().length() == 14 && ValidarCNPJ.validaCNPJ(tfDocumento.getText())) {
+            btSalvar.setEnabled(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Documento não válido verifique");
+        }
+    }//GEN-LAST:event_tfDocumentoFocusLost
 
     /**
      * @param args the command line arguments
@@ -386,7 +433,6 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         });
     }
 
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;
@@ -407,7 +453,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lbLogo;
     private javax.swing.JTextField tfCodigo;
-    private javax.swing.JTextField tfCpfCnpj;
+    private javax.swing.JTextField tfDocumento;
     private javax.swing.JTextField tfNome;
     // End of variables declaration//GEN-END:variables
 
@@ -422,6 +468,9 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
             Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
         }
         tfNome.setText(null);
+        tfDocumento.setText(null);
+        btSalvar.setEnabled(false);
+        btSalvar.setVisible(true);
     }
 
     private Proprietario getDados() {
@@ -429,17 +478,22 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
             obj = new Proprietario();
         }
         obj.setNome(tfNome.getText().toUpperCase());
+        String limpaDocumento = tfDocumento.getText().replace(".", "");
+        limpaDocumento = limpaDocumento.replace("-", "");
+        limpaDocumento = limpaDocumento.replace("/", "");
+        obj.setDocumento(limpaDocumento);
         return obj;
     }
 
     private void setDados(Proprietario p) {
         this.tfCodigo.setText(String.valueOf(p.getId()));
         this.tfNome.setText(p.getNome());
+        this.tfDocumento.setText(p.getDocumento());
     }
 
-    private boolean verificaNome(String nome) {
+    private boolean verificaDocumento(String documento) {
         try {
-            if (gerenciador.ValorExistente(nome) == false) {
+            if (gerenciador.ValorExistente(documento) == false) {
                 return false;
             }
         } catch (ExcecaoSQL | ExcecaoConexao | SQLException ex) {
@@ -458,5 +512,28 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         }
     }
 
-    
+    private String mascaraDocumento(String numero) {
+        String x = numero;
+        tfDocumento.setText(null);
+        MaskFormatter format = null;
+        try {
+            if (numero.length() == 11) {
+                format = new MaskFormatter("###.###.###-##");
+            } else if (numero.length() == 14) {
+                format = new MaskFormatter("##.###.###/####-##");
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(DialogCadastroProprietario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // tfDocumento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(format));
+        tfDocumento.setText(null);
+        return x;
+    }
+
+    private boolean verificaCampos() {
+        if (tfNome.getText().isEmpty() || tfDocumento.getText().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

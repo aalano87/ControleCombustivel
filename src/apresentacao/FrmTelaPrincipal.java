@@ -10,8 +10,6 @@ import dao.GerenciadorAbastecimento;
 import dao.GerenciadorVeiculo;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,6 +28,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import verificacao.Redimensionar;
 
 /**
  *
@@ -45,6 +44,8 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
      * Creates new form FrmTelaPrincipal
      */
     public FrmTelaPrincipal() {
+        setUndecorated(true);
+        atualizarMes();
         initComponents();
         testarConexao();
         carregarID();
@@ -56,7 +57,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
-        atualizarMes();
+        System.out.println(System.getProperties());
     }
 
     /**
@@ -81,15 +82,17 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
+        tfKmHs = new javax.swing.JTextField();
+        tfLitros = new javax.swing.JTextField();
+        tfCodigo = new javax.swing.JTextField();
+        btPesquisar = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
         btSalvar = new javax.swing.JButton();
         btAtualizar = new javax.swing.JButton();
         btRemover = new javax.swing.JButton();
         btCancelar = new javax.swing.JButton();
         btFechar = new javax.swing.JButton();
-        tfKmHs = new javax.swing.JTextField();
-        tfLitros = new javax.swing.JTextField();
-        tfCodigo = new javax.swing.JTextField();
-        btPesquisar = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         lbLogo = new javax.swing.JLabel();
@@ -98,8 +101,11 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         lbSaldoDisponivel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jmSair = new javax.swing.JMenuItem();
@@ -120,6 +126,12 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
         jLabel1.setText("Data:");
 
+        jDate.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jDateFocusGained(evt);
+            }
+        });
+
         jLabel2.setText("Placa:");
 
         cbPlaca.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -138,47 +150,6 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jLabel6.setText("Código:");
 
         jPanel3.setLayout(new java.awt.GridLayout(1, 0));
-
-        btSalvar.setText("Salvar");
-        btSalvar.setToolTipText("");
-        btSalvar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btSalvarActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btSalvar);
-
-        btAtualizar.setText("Atualizar");
-        btAtualizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAtualizarActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btAtualizar);
-
-        btRemover.setText("Remover");
-        btRemover.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRemoverActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btRemover);
-
-        btCancelar.setText("Cancelar");
-        btCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCancelarActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btCancelar);
-
-        btFechar.setText("Fechar");
-        btFechar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFecharActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btFechar);
 
         tfKmHs.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -201,6 +172,60 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 179, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        jPanel7.setLayout(new java.awt.GridLayout(1, 0));
+
+        btSalvar.setText("Salvar");
+        btSalvar.setToolTipText("");
+        btSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSalvarActionPerformed(evt);
+            }
+        });
+        jPanel7.add(btSalvar);
+
+        btAtualizar.setText("Atualizar");
+        btAtualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAtualizarActionPerformed(evt);
+            }
+        });
+        jPanel7.add(btAtualizar);
+
+        btRemover.setText("Remover");
+        btRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRemoverActionPerformed(evt);
+            }
+        });
+        jPanel7.add(btRemover);
+
+        btCancelar.setText("Cancelar");
+        btCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCancelarActionPerformed(evt);
+            }
+        });
+        jPanel7.add(btCancelar);
+
+        btFechar.setText("Fechar");
+        btFechar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFecharActionPerformed(evt);
+            }
+        });
+        jPanel7.add(btFechar);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -216,17 +241,24 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cbPlaca, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(tfMotorista)
-                        .addComponent(tfKmHs)
-                        .addComponent(tfLitros, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbPlaca, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tfMotorista)
+                            .addComponent(tfKmHs)
+                            .addComponent(tfLitros, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(54, 54, 54)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btPesquisar)))
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
                     .addContainerGap()
@@ -242,26 +274,31 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                     .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btPesquisar))
                 .addGap(15, 15, 15)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1)
-                    .addComponent(jDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(cbPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(tfMotorista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(tfKmHs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(tfLitros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 104, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(tfMotorista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(tfKmHs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(tfLitros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                     .addContainerGap(291, Short.MAX_VALUE)
@@ -341,25 +378,55 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(43, Short.MAX_VALUE))
         );
 
-        jMenu1.setText("Menu");
+        jMenuBar1.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
 
-        jMenuItem1.setText("Cadastro Veículo");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/menu.png"))); // NOI18N
+        jMenu1.setText("Menu");
+        jMenu1.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
+
+        jMenu3.setText("Gerenciamento");
+        jMenu3.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+
+        jMenuItem9.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem9.setText("Gerenciar Fornecedor");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                jMenuItem9ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu3.add(jMenuItem9);
 
-        jMenuItem7.setText("Cadastro Proprietário");
+        jMenuItem7.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem7.setText("Gerenciar Proprietário");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem7);
+        jMenu3.add(jMenuItem7);
 
-        jMenuItem2.setText("Entrada de Combustível");
+        jMenuItem1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem1.setText("Gerenciar Veículo");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem1);
+
+        jMenuItem8.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem8.setText("Gerenciar Usuário");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem8);
+
+        jMenu1.add(jMenu3);
+
+        jMenuItem2.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem2.setText("Gerenciar Entrada de Combustível");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -368,6 +435,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jMenu1.add(jMenuItem2);
         jMenu1.add(jSeparator2);
 
+        jmSair.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jmSair.setText("Sair");
         jmSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -378,8 +446,11 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
+        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/relatorio.jpg"))); // NOI18N
         jMenu2.setText("Relatórios");
+        jMenu2.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
 
+        jMenuItem3.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem3.setText("Relação de Abastecimentos");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -389,7 +460,8 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jMenu2.add(jMenuItem3);
         jMenu2.add(jSeparator1);
 
-        jMenuItem4.setText("Abastecimento ");
+        jMenuItem4.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem4.setText("Abastecimentos Proprietário");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem4ActionPerformed(evt);
@@ -397,6 +469,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem4);
 
+        jMenuItem5.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem5.setText("Data e Proprietário");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -405,6 +478,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem5);
 
+        jMenuItem6.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem6.setText("Compra x Consumo");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -412,6 +486,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem6);
+        jMenuItem6.setVisible(false);
 
         jMenuBar1.add(jMenu2);
 
@@ -421,7 +496,9 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -436,7 +513,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         DialogCadastroVeiculo cv = new DialogCadastroVeiculo(this, true);
         cv.setLocationRelativeTo(null);
-        cv.setSize(redimensionarTela());
+        cv.setSize(Redimensionar.redimensionarTela());
         cv.setLocationRelativeTo(null);
         cv.dispose();
         cv.setUndecorated(true);
@@ -446,11 +523,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         DialogEntradaCombustivel ec = new DialogEntradaCombustivel(this, true);
         ec.setLocationRelativeTo(null);
-        ec.setSize(redimensionarTela());
+        ec.setSize(Redimensionar.redimensionarTela());
         ec.setLocationRelativeTo(null);
         ec.dispose();
         ec.setUndecorated(true);
+
+        // set visible false oculta a tela principal ao abrir o 6 dialog
         ec.setVisible(true);
+
+        //set visible true retorna a mostrar a tela principal apos fechar o ec
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
@@ -473,7 +554,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                         + "Msg.: " + ex.getMessage(), "Tela Principal", JOptionPane.ERROR_MESSAGE);
                 Logger.getLogger(DialogCadastroVeiculo.class.getName()).log(Level.SEVERE, null, ex);
             }
-            JOptionPane.showMessageDialog(rootPane, "Dados salvos com sucesso!");
+            JOptionPane.showMessageDialog(rootPane, "Abastecimento realizado com sucesso!");
             btSalvar.setEnabled(false);
         } else {
             JOptionPane.showMessageDialog(null, "Abastecimento já cadastrado.");
@@ -499,7 +580,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                     + "Msg.: " + ex.getMessage(), "Abstecimento", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(DialogCadastroVeiculo.class.getName()).log(Level.SEVERE, null, ex);
         }
-        JOptionPane.showMessageDialog(null, "Dados Atualizados com sucesso!");
+        JOptionPane.showMessageDialog(null, "Abastecimento atualizado com sucesso!");
     }//GEN-LAST:event_btAtualizarActionPerformed
 
     private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
@@ -529,7 +610,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btCancelarActionPerformed
 
     private void btFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFecharActionPerformed
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_btFecharActionPerformed
 
     private void tfLitrosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfLitrosKeyReleased
@@ -571,17 +652,14 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         btSalvar.setEnabled(false);
     }//GEN-LAST:event_btPesquisarActionPerformed
 
-    private void cbPlacaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbPlacaFocusGained
-        carregarDadosVeiculoCombo();
-    }//GEN-LAST:event_cbPlacaFocusGained
-
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         estoqueLitros();
+        
     }//GEN-LAST:event_formWindowActivated
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         DialogRelatorioAbastecimentos ra = new DialogRelatorioAbastecimentos(this, true);
-        ra.setSize(redimensionarTela());
+        ra.setSize(Redimensionar.redimensionarTela());
         ra.setLocationRelativeTo(null);
         ra.dispose();
         ra.setUndecorated(true);
@@ -594,7 +672,8 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         DialogRelatorioAbastecimentoProprietario rap = new DialogRelatorioAbastecimentoProprietario(this, true);
-        rap.setSize(redimensionarTela());
+        rap.setLocationRelativeTo(null);
+        rap.setSize(Redimensionar.redimensionarTela());
         rap.setLocationRelativeTo(null);
         rap.dispose();
         rap.setUndecorated(true);
@@ -604,17 +683,17 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         DialogRelatorioData rd = new DialogRelatorioData(this, true);
-        rd.setSize(redimensionarTela());
+        //rd.dispose();
+        //rd.setUndecorated(true);
+        //rd.setModal(false);
+        rd.setSize(Redimensionar.redimensionarTela());
         rd.setLocationRelativeTo(null);
-        rd.dispose();
-        rd.setUndecorated(true);
-        rd.setModal(false);
         rd.setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         DialogRelatorioCompraConsumo cc = new DialogRelatorioCompraConsumo(this, true);
-        cc.setSize(redimensionarTela());
+        cc.setSize(Redimensionar.redimensionarTela());
         cc.setLocationRelativeTo(null);
         cc.dispose();
         cc.setUndecorated(true);
@@ -624,13 +703,41 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         DialogCadastroProprietario cp = new DialogCadastroProprietario(this, true);
-        cp.setSize(redimensionarTela());
+        cp.setSize(Redimensionar.redimensionarTela());
         cp.setLocationRelativeTo(null);
         cp.dispose();
         cp.setUndecorated(true);
         cp.setModal(false);
         cp.setVisible(true);
     }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        DialogCadastroUsuario cad = new DialogCadastroUsuario(this, true);
+        cad.setSize(Redimensionar.redimensionarTela());
+        cad.setLocationRelativeTo(null);
+        cad.dispose();
+        cad.setUndecorated(true);
+        cad.setModal(false);
+        cad.setVisible(true);
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        DialogCadastroFornecedor cad = new DialogCadastroFornecedor(this, true);
+        cad.setSize(Redimensionar.redimensionarTela());
+        cad.setLocationRelativeTo(null);
+        cad.dispose();
+        cad.setUndecorated(true);
+        cad.setModal(false);
+        cad.setVisible(true);
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jDateFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jDateFocusGained
+        carregarDadosVeiculoCombo();
+    }//GEN-LAST:event_jDateFocusGained
+
+    private void cbPlacaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbPlacaFocusGained
+        carregarDadosVeiculoCombo();
+    }//GEN-LAST:event_cbPlacaFocusGained
 
     /**
      * @param args the command line arguments
@@ -639,17 +746,11 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         FrmTelaPrincipal tp = new FrmTelaPrincipal();
         tp.setLocationRelativeTo(null);
         tp.setExtendedState(MAXIMIZED_BOTH);
-        tp.dispose();
-        tp.setUndecorated(true);
         tp.setVisible(true);
 
     }
 
-    public static Dimension redimensionarTela() {
-        return (new Dimension(
-                (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-                (int) ((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight()) * 0.88)));
-    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;
     private javax.swing.JButton btCancelar;
@@ -669,6 +770,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -677,11 +779,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -711,10 +817,10 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         }
         obj.setVeiculo((Veiculo) cbPlaca.getSelectedItem());
         obj.setData(jDate.getDate());
-        if (obj.getVeiculo().getTipo().equals("Caminhão") || obj.getVeiculo().getTipo().equals("Utilitário")) {
+        if (obj.getVeiculo().getTipo().equals("CAMINHÃO") || obj.getVeiculo().getTipo().equals("UTILITÁRIO")) {
             obj.setKm(Integer.valueOf(tfKmHs.getText()));
             obj.setHoras(0);
-        } else if (obj.getVeiculo().getTipo().equals("Máquina")) {
+        } else if (obj.getVeiculo().getTipo().equals("MÁQUINA")) {
             obj.setHoras(Integer.valueOf(tfKmHs.getText()));
             obj.setKm(0);
         }
@@ -744,7 +850,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         return true;
     }
 
-    private void carregarDadosVeiculoCombo() {
+    public void carregarDadosVeiculoCombo() {
         GerenciadorVeiculo gv = new GerenciadorVeiculo();
         try {
             lista = gv.obterTodos();
@@ -766,7 +872,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         }
     }
 
-    public void estoqueLitros() {
+    public void estoqueLitros()  {
         float x = 0;
         try {
             x = gerenciador.getLitrosEntrada() - gerenciador.getLitrosSaida();
@@ -774,11 +880,12 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Conexão perdida o sistema será encerrado");
+            System.exit(0);
         } catch (ExcecaoSQL ex) {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        NumberFormat nb = new DecimalFormat("0.##");
-
+        } 
+        NumberFormat nb = new DecimalFormat("0.00");
         lbSaldoDisponivel.setText(String.valueOf(nb.format(x)));
     }
 
@@ -823,10 +930,10 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
     }
 
-    private void atualizarMes() {
+    public void atualizarMes() {
         PreparedStatement ps;
         try {
-            ps = Conexao.getConnection().prepareStatement("update abastecimento set mes = month(abastecimento.data);");
+            ps = Conexao.getConnection().prepareStatement("UPDATE ABASTECIMENTO SET MES = MONTH(ABASTECIMENTO.DATA);");
             ps.executeUpdate();
         } catch (ExcecaoConexao ex) {
             Logger.getLogger(DialogRelatorioCompraConsumo.class.getName()).log(Level.SEVERE, null, ex);

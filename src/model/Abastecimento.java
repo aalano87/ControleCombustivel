@@ -20,7 +20,9 @@ public class Abastecimento {
     private float litros;
     private int horas;
     private int km;
-
+    private String modificado;
+    
+    
     @Override
     public int hashCode() {
         int hash = 7;
@@ -98,6 +100,14 @@ public class Abastecimento {
 
     public void setVeiculo(Veiculo veiculo) {
         this.veiculo = veiculo;
+    }
+
+    public String getModificado() {
+        return modificado;
+    }
+
+    public void setModificado(String modificado) {
+        this.modificado = modificado;
     }
 
     

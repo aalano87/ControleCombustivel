@@ -23,6 +23,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import verificacao.Redimensionar;
 
 /**
  *
@@ -37,7 +38,12 @@ public class DialogRelatorioData extends javax.swing.JDialog {
      */
     public DialogRelatorioData(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        
+        setModal(false);
+        setUndecorated(true);
+        setSize(Redimensionar.redimensionarTela());
         initComponents();
+        setSize(Redimensionar.redimensionarTela());
         carregarDadosProprietarioCombo();
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
@@ -106,7 +112,7 @@ public class DialogRelatorioData extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(DataFim, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(DataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbProprietario, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(cbProprietario, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btGeraRelatorio)
                         .addGap(18, 18, 18)
@@ -117,17 +123,17 @@ public class DialogRelatorioData extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(59, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1)
-                    .addComponent(DataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(DataInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(34, 34, 34)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2)
-                    .addComponent(DataFim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(DataFim, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(34, 34, 34)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3)
-                    .addComponent(cbProprietario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(cbProprietario)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(60, 60, 60)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btGeraRelatorio)
@@ -192,7 +198,7 @@ public class DialogRelatorioData extends javax.swing.JDialog {
         } catch (ExcecaoSQL ex) {
             Logger.getLogger(DialogRelatorioData.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
-            Logger.getLogger(DialogRelatorioData.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Há campos em branco verifique!");
         }
     }//GEN-LAST:event_btGeraRelatorioActionPerformed
 
@@ -251,12 +257,14 @@ public class DialogRelatorioData extends javax.swing.JDialog {
             java.sql.Date Cdata1 = new java.sql.Date(DataInicio.getDate().getTime());
             java.sql.Date Cdata2 = new java.sql.Date(DataFim.getDate().getTime());
             String proprietario = cbProprietario.getSelectedItem().toString();
+            ImageIcon gto = new ImageIcon(getClass().getResource("/icon/logo2.jpg"));  
             map.put("Data1", Cdata1);
             map.put("Data2", Cdata2);
+            map.put("Logo", gto.getImage());
             map.put("Proprietario", proprietario);
             JasperPrint rel = JasperFillManager.fillReport(is, map, conexao.Conexao.getConnection());
             JasperViewer viewer = new JasperViewer(rel, false);
-            viewer.setExtendedState(MAXIMIZED_BOTH);
+            viewer.setSize(Redimensionar.redimensionarTela());
             viewer.setLocationRelativeTo(null);
             viewer.setVisible(true);
             viewer.setZoomRatio((float) 0.8);

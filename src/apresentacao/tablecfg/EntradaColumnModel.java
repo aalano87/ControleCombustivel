@@ -38,13 +38,14 @@ public class EntradaColumnModel extends DefaultTableColumnModel{
     public EntradaColumnModel(FontMetrics fm) {
         int digito = fm.stringWidth("0");
         int letra = fm.stringWidth("M");
-        addColumn(criaColuna(0, 5 * digito, fm, false, "Código"));
+        addColumn(criaColuna(0, 10 * digito, fm, false, "Código"));
         addColumn(criaColuna(1, 18 * letra, fm, false, "Data"));
-        addColumn(criaColuna(2, 40 * letra, fm, false, "Fornecedor"));
+        addColumn(criaColuna(2, 20 * letra, fm, false, "Fornecedor"));
         addColumn(criaColuna(3, 10 * digito, fm, false, "NF"));
-        addColumn(criaColuna(4, 25 * letra, fm, false, "Comprador"));
+        addColumn(criaColuna(4, 20 * letra, fm, false, "Comprador"));
         addColumn(criaColuna(5, 15 * digito, fm, true, "Qtde Litros"));
         addColumn(criaColuna(6, 30 * digito, fm, true, "Vlr Unitário"));
         addColumn(criaColuna(7, 30 * digito, fm, true, "Total R$"));
+        addColumn(criaColuna(8, 30 * letra, fm, true, "Última alteração"));
     } 
 }

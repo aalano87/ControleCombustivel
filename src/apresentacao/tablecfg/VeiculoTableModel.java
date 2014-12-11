@@ -8,10 +8,8 @@
  */
 package apresentacao.tablecfg;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
-import model.Abastecimento;
 import model.Veiculo;
 
 /**
@@ -52,6 +50,8 @@ public class VeiculoTableModel extends AbstractTableModel {
                 return veiculo.getVeiculo();
             case 5:
                 return veiculo.getProprietario();
+            case 6:
+                return veiculo.getModificado();
         }
         return null;
     }
@@ -63,7 +63,7 @@ public class VeiculoTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 6;
+        return 7;
     }
 
     public Veiculo getValoresVeiculo(int rowIndex) {

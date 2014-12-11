@@ -10,13 +10,15 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select sum(a.litros) as litros_consumidos, a.data, p.nome from abastecimento a
-inner join veiculo v 
+		<![CDATA[
+select sum(a.litros) as litros_consumidos, a.data, p.nome from ABASTECIMENTO a
+inner join VEICULO v 
 on a.IDVEICULO = v.IDVEICULO 
-inner join proprietario p 
+inner join PROPRIETARIO p 
 on v.IDPROPRIETARIO = p.idproprietario
 where a.data between $P{Data1} and $P{Data2} and p.idproprietario between 2 and 3
-group by a.mes, p.nome]]>
+group by a.mes, p.nome
+]]>
 	</queryString>
 	<field name="litros_consumidos" class="java.lang.Double"/>
 	<field name="data" class="java.sql.Timestamp">

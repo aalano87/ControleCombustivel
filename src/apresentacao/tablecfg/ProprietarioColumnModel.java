@@ -38,8 +38,9 @@ public class ProprietarioColumnModel extends DefaultTableColumnModel{
     public ProprietarioColumnModel(FontMetrics fm) {
         int digito = fm.stringWidth("0");
         int letra = fm.stringWidth("M");
-        addColumn(criaColuna(0, 5 * digito, fm, false, "Código"));
-        addColumn(criaColuna(1, 18 * letra, fm, false, "Nome"));
-        
+        addColumn(criaColuna(0, 15 * digito, fm, false, "Código"));
+        addColumn(criaColuna(1, 40 * letra, fm, false, "Nome"));
+        addColumn(criaColuna(2, 40 * letra, fm, false, "Documento"));
+        addColumn(criaColuna(3, 30 * digito, fm, false, "Última alteração"));
     } 
 }

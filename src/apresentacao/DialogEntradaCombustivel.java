@@ -5,8 +5,8 @@
  */
 package apresentacao;
 
-import static apresentacao.FrmTelaPrincipal.redimensionarTela;
 import dao.GerenciadorEntradaCombustivel;
+import dao.GerenciadorFornecedor;
 import dao.GerenciadorProprietario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
@@ -19,7 +19,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import model.EntradaCombustivel;
+import model.Fornecedor;
 import model.Proprietario;
+import verificacao.Redimensionar;
+import verificacao.SomenteNumero;
 
 /**
  *
@@ -30,6 +33,8 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     private EntradaCombustivel obj = new EntradaCombustivel();
     private GerenciadorEntradaCombustivel gerenciador = new GerenciadorEntradaCombustivel();
     private List<Proprietario> lista;
+    private List<Fornecedor> listaFornecedor;
+
     /**
      * Creates new form DialogEntradaCombustivel
      */
@@ -39,6 +44,8 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
         carregarDadosProprietarioCombo();
+        carregarDadosFornecedorCombo();
+        
     }
 
     /**
@@ -59,7 +66,6 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         cbComprador = new javax.swing.JComboBox();
-        tfQtdeLitros = new javax.swing.JFormattedTextField();
         tfValorUnitario = new javax.swing.JFormattedTextField();
         jPanel2 = new javax.swing.JPanel();
         btSalvar = new javax.swing.JButton();
@@ -73,6 +79,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         jDate = new com.toedter.calendar.JDateChooser();
         jLabel7 = new javax.swing.JLabel();
         tfTotal = new javax.swing.JTextField();
+        tfQtdeLitros = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         lbLogo = new javax.swing.JLabel();
@@ -98,17 +105,6 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         jLabel5.setText("Valor Unitário:");
 
         cbComprador.setToolTipText("");
-
-        try {
-            tfQtdeLitros.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        tfQtdeLitros.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                tfQtdeLitrosKeyReleased(evt);
-            }
-        });
 
         try {
             tfValorUnitario.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("#.###")));
@@ -181,12 +177,15 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
             }
         });
 
-        cbFornecedor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "AGRICOPEL", "COPETROL", "CR DIESEL", "IDAZA", "POTENCIAL" }));
-        cbFornecedor.setSelectedIndex(-1);
-
         jLabel7.setText("Total:");
 
         tfTotal.setEditable(false);
+
+        tfQtdeLitros.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tfQtdeLitrosFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -210,14 +209,6 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
                         .addGap(4, 4, 4)
                         .addComponent(cbFornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
-                        .addComponent(cbComprador, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
-                        .addComponent(tfQtdeLitros, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
                         .addComponent(tfValorUnitario, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -225,7 +216,16 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
                         .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(tfQtdeLitros))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(4, 4, 4)
+                            .addComponent(cbComprador, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,13 +257,11 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
                         .addGap(3, 3, 3)
                         .addComponent(jLabel6))
                     .addComponent(cbComprador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel4))
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
                     .addComponent(tfQtdeLitros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(3, 3, 3)
@@ -283,15 +281,19 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel8.setText("Entrada de Combustível");
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 0, 414, 71));
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel8.setText("Gerenciar Entrada de Combustível");
+        jLabel8.setToolTipText("");
+        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(172, 0, 300, 71));
         jPanel3.add(lbLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 166, 71));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/relatorio.jpg"))); // NOI18N
         jMenu2.setText("Relatório");
+        jMenu2.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
 
+        jMenuItem1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem1.setText("Entradas");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -309,7 +311,8 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
         obj = this.getDados();
-        if (verificaNF(obj.getNf(), obj.getFornecedor()) == false) {
+        //  System.out.println(obj.getNf() + "  "+ obj.getFornecedor());
+        if (verificaNF(obj.getNf(), obj.getFornecedor().getNome()) == false) {
             try {
                 gerenciador.inserir(obj);
                 this.limparCampos();
@@ -400,8 +403,6 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         calcularTotal();
         tfNumeroNF.setEditable(false);
         cbFornecedor.setEnabled(false);
-        System.out.println("Mes " +jDate.getCalendar().MONTH);
-        System.out.println("Mes 2" +jDate.getJCalendar().getMonthChooser());
         
     }//GEN-LAST:event_btPesquisarActionPerformed
 
@@ -425,18 +426,19 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         calcularTotal();
     }//GEN-LAST:event_tfValorUnitarioKeyReleased
 
-    private void tfQtdeLitrosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfQtdeLitrosKeyReleased
-        calcularTotal();
-    }//GEN-LAST:event_tfQtdeLitrosKeyReleased
-
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         DialogRelatorioEntradas re = new DialogRelatorioEntradas(null, true);
-        re.setSize(redimensionarTela());
+        re.setSize(Redimensionar.redimensionarTela());
         re.setLocationRelativeTo(null);
         re.dispose();
         re.setUndecorated(true);
         re.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void tfQtdeLitrosFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfQtdeLitrosFocusGained
+        tfQtdeLitros.setDocument(new SomenteNumero());
+        calcularTotal();
+    }//GEN-LAST:event_tfQtdeLitrosFocusGained
 
     /**
      * @param args the command line arguments
@@ -484,7 +486,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         jDate.setDate(null);
         tfNumeroNF.setText(null);
         tfNumeroNF.setEditable(true);
-        tfQtdeLitros.setValue(null);
+        tfQtdeLitros.setText(null);
         tfValorUnitario.setValue(null);
         cbComprador.setSelectedIndex(-1);
         cbFornecedor.setSelectedIndex(-1);
@@ -495,9 +497,9 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         if (obj == null) {
             obj = new EntradaCombustivel();
         }
-        obj.setProprietario((Proprietario)cbComprador.getSelectedItem());
+        obj.setProprietario((Proprietario) cbComprador.getSelectedItem());
         obj.setData(jDate.getDate());
-        obj.setFornecedor(cbFornecedor.getSelectedItem().toString());
+        obj.setFornecedor((Fornecedor) cbFornecedor.getSelectedItem());
         obj.setNf(tfNumeroNF.getText());
         obj.setQtdeLitros(Double.valueOf(tfQtdeLitros.getText()));
         obj.setValorUnitario(Double.valueOf(tfValorUnitario.getText()));
@@ -510,8 +512,10 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         this.tfNumeroNF.setText(obj.getNf());
         this.tfQtdeLitros.setText(String.valueOf(obj.getQtdeLitros()));
         this.tfValorUnitario.setText(String.valueOf(obj.getValorUnitario()));
-        this.cbComprador.setSelectedItem(obj.getProprietario());
+        this.cbFornecedor.addItem(obj.getFornecedor());
         this.cbFornecedor.setSelectedItem(obj.getFornecedor());
+        this.cbComprador.setSelectedItem(obj.getProprietario());
+        
     }
 
     private boolean verificaNF(String nf, String fornecedor) {
@@ -526,8 +530,11 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     }
 
     public void calcularTotal() {
-        float calc = Float.valueOf(tfQtdeLitros.getText()) * Float.valueOf(tfValorUnitario.getText());
-        tfTotal.setText(String.valueOf(calc));
+        try {
+            double calc = Double.valueOf(tfQtdeLitros.getText()) * Double.valueOf(tfValorUnitario.getText());
+            tfTotal.setText(String.valueOf(calc));
+        } catch (NumberFormatException ex) {
+        }
     }
 
     public ImageIcon criarImageIcon(String caminho, String descricao) {
@@ -539,19 +546,31 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
             return null;
         }
     }
-    
+
     private void carregarDadosProprietarioCombo() {
         GerenciadorProprietario gp = new GerenciadorProprietario();
         try {
             lista = gp.obterTodos();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Nenhum veículo cadastrado.");
+            JOptionPane.showMessageDialog(this, "Nenhum proprietário cadastrado.");
         }
         cbComprador.setModel(
                 new DefaultComboBoxModel(lista.toArray()));
         cbComprador.setSelectedIndex(-1);
     }
-    
+
+    private void carregarDadosFornecedorCombo() {
+        GerenciadorFornecedor gf = new GerenciadorFornecedor();
+        try {
+            listaFornecedor = gf.obterTodos();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Nenhum fornecedor cadastrado.");
+        }
+        cbFornecedor.setModel(
+                new DefaultComboBoxModel(listaFornecedor.toArray()));
+        cbFornecedor.setSelectedIndex(-1);
+        System.out.println(listaFornecedor.get(0));
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;
@@ -580,7 +599,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lbLogo;
     private javax.swing.JTextField tfNumeroNF;
-    private javax.swing.JFormattedTextField tfQtdeLitros;
+    private javax.swing.JTextField tfQtdeLitros;
     private javax.swing.JTextField tfTotal;
     private javax.swing.JFormattedTextField tfValorUnitario;
     // End of variables declaration//GEN-END:variables

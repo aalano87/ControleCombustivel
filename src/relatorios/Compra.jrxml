@@ -1,79 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Compra" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8c96f19a-b83b-40a2-97f9-f1cbee48d3ed">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelatorioEleicao_subreport1_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e3cdcfd7-3ab3-4771-8ef3-64cc8923d63c">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="Data1" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="Data2" class="java.util.Date">
+	<parameter name="idEleicao" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select
-sum(e.qtde_litros) as litros_comprados, p.nome as nome_comprador, e.mes
-from entrada e
-inner join proprietario p
-on e.idproprietario = p.idproprietario
-where e.data between $P{Data1} and $P{Data2}
-group by p.nome, e.mes]]>
+		<![CDATA[SELECT
+     candidato.`idCandidato` AS candidato_idCandidato,
+     candidato.`nome` AS candidato_nome,
+     candidato.`numero` AS candidato_numero,
+     candidato.`foto` AS candidato_foto,
+     candidato.`qtdVotosRecebidos` AS candidato_qtdVotosRecebidos,
+     eleicao_has_candidato.`eleicao_ideleicao` AS eleicao_has_candidato_eleicao_ideleicao,
+     eleicao_has_candidato.`candidato_idCandidato` AS eleicao_has_candidato_candidato_idCandidato,
+     eleicao.`ideleicao` AS eleicao_ideleicao,
+     eleicao.`nome` AS eleicao_nome,
+     eleicao.`dataInicial` AS eleicao_dataInicial,
+     eleicao.`dataFinal` AS eleicao_dataFinal,
+     eleicao.`tipoEleicao` AS eleicao_tipoEleicao,
+     eleicao.`qtdVotosBrancos` AS eleicao_qtdVotosBrancos,
+     eleicao.`qtdVotosNulos` AS eleicao_qtdVotosNulos,
+     eleicao.`qtdEleitoresQueVotaram` AS eleicao_qtdEleitoresQueVotaram
+FROM
+     `candidato` candidato INNER JOIN `eleicao_has_candidato` eleicao_has_candidato ON candidato.`idCandidato` = eleicao_has_candidato.`candidato_idCandidato`
+     INNER JOIN `eleicao` eleicao ON eleicao_has_candidato.`eleicao_ideleicao` = eleicao.`ideleicao`
+WHERE eleicao.`ideleicao` = $P{idEleicao}
+ ORDER BY candidato.`qtdVotosRecebidos` desc]]>
 	</queryString>
-	<field name="litros_comprados" class="java.lang.Double"/>
-	<field name="nome_comprador" class="java.lang.String"/>
-	<field name="mes" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<variable name="mesToString" class="java.lang.String">
-		<variableExpression><![CDATA[$F{mes}.equals(1) ? "Jan" : $F{mes}.equals(2) ? "Fev" : 
-$F{mes}.equals(3) ? "Mar" :
-$F{mes}.equals(4) ? "Abr" : $F{mes}.equals(5) ? "Mai" :
-$F{mes}.equals(6) ? "Jun" : $F{mes}.equals(7) ? "Jul" :
-$F{mes}.equals(8) ? "Ago" : $F{mes}.equals(9) ? "Set" :
-$F{mes}.equals(10) ? "Out": $F{mes}.equals(11) ? "Nov" :
-$F{mes}.equals(12) ? "Dez" : ""]]></variableExpression>
-	</variable>
+	<field name="candidato_idCandidato" class="java.lang.Integer"/>
+	<field name="candidato_nome" class="java.lang.String"/>
+	<field name="candidato_numero" class="java.lang.Integer"/>
+	<field name="candidato_foto" class="java.lang.Object"/>
+	<field name="candidato_qtdVotosRecebidos" class="java.lang.Double"/>
+	<field name="eleicao_has_candidato_eleicao_ideleicao" class="java.lang.Integer"/>
+	<field name="eleicao_has_candidato_candidato_idCandidato" class="java.lang.Integer"/>
+	<field name="eleicao_ideleicao" class="java.lang.Integer"/>
+	<field name="eleicao_nome" class="java.lang.String"/>
+	<field name="eleicao_dataInicial" class="java.sql.Timestamp"/>
+	<field name="eleicao_dataFinal" class="java.sql.Timestamp"/>
+	<field name="eleicao_tipoEleicao" class="java.lang.String"/>
+	<field name="eleicao_qtdVotosBrancos" class="java.lang.Integer"/>
+	<field name="eleicao_qtdVotosNulos" class="java.lang.Integer"/>
+	<field name="eleicao_qtdEleitoresQueVotaram" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
 	<columnHeader>
-		<band height="21" splitType="Stretch">
+		<band height="61" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="100" height="20" uuid="84c77315-df32-4175-af0e-6f8f85175e78"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Mês]]></text>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#FFFFFF" backcolor="#000000" uuid="6fb4986e-0e26-4ca5-b579-ce32a89e663c"/>
+				<text><![CDATA[Candidato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="100" y="0" width="100" height="20" uuid="a0501f93-bb95-4128-ab0c-009775333bd2"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Comprador]]></text>
+				<reportElement x="0" y="20" width="100" height="20" uuid="ca983922-dca0-48e9-82cd-2763c9caa905"/>
+				<text><![CDATA[Nome Candidato]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="200" y="0" width="100" height="20" uuid="a969f136-f0bb-4ca1-9fb6-66aa6a4b894a"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Litros Comprados]]></text>
-			</staticText>
+			<line>
+				<reportElement x="100" y="20" width="1" height="20" uuid="448a317f-9193-4cc8-bca9-ff133041876d"/>
+			</line>
+			<line>
+				<reportElement x="1" y="40" width="554" height="1" uuid="cc9a5309-60ab-436b-bbea-41f9c632efd9"/>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="125" splitType="Stretch">
 			<textField>
-				<reportElement x="100" y="0" width="100" height="20" uuid="f67fd04b-5253-4a52-b905-c26156cb27c5"/>
-				<textFieldExpression><![CDATA[$F{nome_comprador}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="200" y="0" width="100" height="20" uuid="49994a8b-f1b3-402e-96d2-f054c5a18024"/>
-				<textFieldExpression><![CDATA[$F{litros_comprados}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="0" width="100" height="20" uuid="6e2ffc7a-c497-41d0-985e-ddc689367458"/>
-				<textFieldExpression><![CDATA[$V{mesToString}]]></textFieldExpression>
+				<reportElement x="0" y="12" width="100" height="20" uuid="0af38b00-4358-491b-96d2-d7e0f9632c5d"/>
+				<textFieldExpression><![CDATA[$F{candidato_nome}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
 </jasperReport>

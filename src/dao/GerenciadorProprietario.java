@@ -10,9 +10,12 @@ import excecao.ExcecaoSQL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import model.Proprietario;
-import model.Veiculo;
+import sessao.Sessao;
 
 /**
  *
@@ -20,13 +23,22 @@ import model.Veiculo;
  */
 public class GerenciadorProprietario {
 
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
     public void inserir(Proprietario proprietario) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO PROPRIETARIO(NOME) "
-                + "VALUES (?);";
+                = "INSERT INTO PROPRIETARIO(NOME, DOCUMENTO, MODIFICADO) "
+                + "VALUES (?,?,?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, proprietario.getNome());
+            ps.setString(2, proprietario.getDocumento());
+            ps.setString(3, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -35,12 +47,14 @@ public class GerenciadorProprietario {
     }
 
     public void atualizar(Proprietario proprietario) throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "UPDATE PROPRIETARIO SET NOME = ? "
+        String sql = "UPDATE PROPRIETARIO SET NOME = ?, DOCUMENTO = ?, MODIFICADO = ? "
                 + " WHERE IDPROPRIETARIO = ?";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, proprietario.getNome());
-            ps.setInt(5, proprietario.getId());
+            ps.setString(2, proprietario.getDocumento());
+            ps.setString(3, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+            ps.setInt(4, proprietario.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -106,6 +120,8 @@ public class GerenciadorProprietario {
         try {
             a.setId(rs.getInt("IDPROPRIETARIO"));
             a.setNome(rs.getString("NOME"));
+            a.setDocumento(rs.getString("DOCUMENTO"));
+            a.setModificado(rs.getString("MODIFICADO"));
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Campos inexistentes da tabela de banco de dados.\n"
                     + "Msg: " + ex.getMessage(), ex.getCause());
@@ -113,11 +129,11 @@ public class GerenciadorProprietario {
         return a;
     }
 
-     public Proprietario obterProprietario(int id) throws ExcecaoSQL, ExcecaoConexao {
+    public Proprietario obterProprietario(int id) throws ExcecaoSQL, ExcecaoConexao {
         String sql = "SELECT * FROM PROPRIETARIO WHERE IDPROPRIETARIO = ?;";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
-            ps.setInt(1,  id );
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Proprietario a = transformarResultSetEmObjeto(rs);
@@ -130,8 +146,8 @@ public class GerenciadorProprietario {
                     + "Msg.: " + ex.getMessage(), ex.getCause());
         }
     }
-    
-     public ArrayList<Proprietario> pesquisaProprietarioNome(String nome) throws ExcecaoConexao, ExcecaoSQL {
+
+    public ArrayList<Proprietario> pesquisaProprietarioNome(String nome) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM PROPRIETARIO WHERE NOME LIKE ? ;";
         ResultSet rs = null;
         try {
@@ -144,21 +160,21 @@ public class GerenciadorProprietario {
         }
         return resultSetParaList(rs);
     }
-     
+
     public int lastID() throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT MAX(IDPROPRIETARIO) as idproprietario FROM proprietario";
+        String sql = "SELECT MAX(IDPROPRIETARIO) AS IDPROPRIETARIO FROM PROPRIETARIO";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        int lastId = rs.getInt("idproprietario");
+        int lastId = rs.getInt("IDPROPRIETARIO");
         rs.close();
         stmt.close();
         return lastId + 1;
     }
 
-    public boolean ValorExistente(String nome) throws ExcecaoSQL, SQLException, ExcecaoConexao {
+    public boolean ValorExistente(String documento) throws ExcecaoSQL, SQLException, ExcecaoConexao {
         boolean result = true;
-        String sql = "select nome from proprietario where nome like '" + nome+ "'";
+        String sql = "SELECT DOCUMENTO FROM PROPRIETARIO WHERE DOCUMENTO LIKE '" + documento + "'";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {

@@ -12,16 +12,17 @@
 	<parameter name="Proprietario" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="Logo" class="java.awt.Image"/>
 	<queryString>
 		<![CDATA[select a.id as a_id, a.data as a_data, a.litros as a_litros, a.motorista as a_motorista, a.km as a_km, a.horas as a_hs, v.idveiculo as v_idveiculo, v.idproprietario as v_idproprietario, v.placa as v_placa, v.tipo as v_tipo, p.idproprietario as p_idproprietario, p.nome as p_nome, e.valor_unitario as e_valor_unitario
 
-from abastecimento a
-inner join veiculo v
+from ABASTECIMENTO a
+inner join VEICULO v
 on a.idveiculo = v.idveiculo
-inner join proprietario p
+inner join PROPRIETARIO p
 on v.idproprietario = p.IDPROPRIETARIO,
-entrada e
-where a.data between  $P{Data1} and $P{Data2}
+ENTRADA e
+where a.data between $P{Data1} and $P{Data2}
 and v.idproprietario = p.idproprietario
 and p.nome like $P{Proprietario}
 group by a.id order by a.data]]>
@@ -103,6 +104,10 @@ group by a.id order by a.data]]>
 				<reportElement x="65" y="80" width="116" height="20" uuid="1188cc9f-8c57-4158-a0fe-fa90e744b64b"/>
 				<textFieldExpression><![CDATA[$P{Proprietario}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="0" y="0" width="147" height="59" uuid="efc800d5-7f51-4a96-a7be-6cc33fdbb094"/>
+				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

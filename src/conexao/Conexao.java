@@ -8,7 +8,11 @@ import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,6 +21,8 @@ import java.sql.SQLException;
 public class Conexao {
 
     private static Connection connection;
+    private static Statement stm;
+    private static ResultSet resultset;
 
     public static Connection getConnection() throws ExcecaoConexao, ExcecaoSQL {
         if (connection != null) {
@@ -33,15 +39,21 @@ public class Conexao {
         String url = null;
         String user = null;
         String pass = null;
+
         try {
             Class.forName("com.mysql.jdbc.Driver");//defina o driver do SGBD
-            url = "jdbc:mysql://127.0.0.1:3306/bd_controle_combustivel";//coloque o nome do seu banco de dados BD LOCAL
+           // url = "jdbc:mysql://127.0.0.1:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD LOCAL
             //url = "jdbc:mysql://192.168.1.53:3306/bd_controle_combustivel";//coloque o nome do seu banco de dados BD REDE INTERNA
-          //  url = "jdbc:mysql://189.22.11.210:3306/bd_controle_combustivel";//coloque o nome do seu banco de dados BD REDE EXTERNA
+            url = "jdbc:mysql://179.127.174.110:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD REDE EXTERNA
+            //url = "jdbc:mysql://rbr37.dizinc.com:3306/jjthomaz_combustivel";//BD CPANEL
             user = "root";//coloque o nome de usuário do seu banco de dados
-            //pass = "jjt813";//coloque a senha de acesso ao banco de dados
-            pass = "QNUZO35j";//coloque a senha de acesso ao banco de dados
+            // user = "jjthomaz";
+            pass = "jjt813";//coloque a senha de acesso ao banco de dados
+            //pass = "QNUZO35j";//coloque a senha de acesso ao banco de dados
+            // pass = "jjth2012";
+
             connection = DriverManager.getConnection(url, user, pass);
+
         } catch (ClassNotFoundException ex) {
             throw new ExcecaoConexao("Falha na conexão com banco de dados. \n"
                     + "Está faltando a biblioteca correta do driver ou, ainda, \n"
@@ -57,6 +69,7 @@ public class Conexao {
                     + "[" + ex.getMessage() + "].", ex.getCause());
         }
         return connection;
+
     }
 
     public static void closeConnection() throws ExcecaoSQL {
@@ -66,5 +79,15 @@ public class Conexao {
             throw new ExcecaoSQL("Não foi possível encerrar a conexão.\n"
                     + "[" + ex.getMessage() + "].", ex.getCause());
         }
+    }
+
+    public static ResultSet executeSQL(String sql) {
+        try {
+            stm = connection.createStatement();
+            resultset = stm.executeQuery(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Conexao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return resultset;
     }
 }

@@ -10,9 +10,13 @@ import excecao.ExcecaoSQL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import model.Proprietario;
 import model.Veiculo;
+import sessao.Sessao;
 
 /**
  *
@@ -20,10 +24,16 @@ import model.Veiculo;
  */
 public class GerenciadorVeiculo {
 
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
     public void inserir(Veiculo veiculo) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO VEICULO(TIPO, VEICULO, STATUS, PLACA, IDPROPRIETARIO) "
-                + "VALUES (?, ?, ?, ?, ?);";
+                = "INSERT INTO VEICULO(TIPO, VEICULO, STATUS, PLACA, IDPROPRIETARIO, MODIFICADO) "
+                + "VALUES (?, ?, ?, ?, ?, ?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, veiculo.getTipo());
@@ -31,6 +41,7 @@ public class GerenciadorVeiculo {
             ps.setString(3, veiculo.getStatus());
             ps.setString(4, veiculo.getPlaca());
             ps.setInt(5, veiculo.getProprietario().getId());
+            ps.setString(6, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -39,7 +50,7 @@ public class GerenciadorVeiculo {
     }
 
     public void atualizar(Veiculo veiculo) throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "UPDATE VEICULO SET TIPO = ?, VEICULO = ?, STATUS = ?, IDPROPRIETARIO = ? "
+        String sql = "UPDATE VEICULO SET TIPO = ?, VEICULO = ?, STATUS = ?, IDPROPRIETARIO = ?, MODIFICADO = ? "
                 + " WHERE PLACA = ?";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -47,7 +58,8 @@ public class GerenciadorVeiculo {
             ps.setString(2, veiculo.getVeiculo());
             ps.setString(3, veiculo.getStatus());
             ps.setInt(4, veiculo.getProprietario().getId());
-            ps.setString(5, veiculo.getPlaca());
+            ps.setString(5, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+            ps.setString(6, veiculo.getPlaca());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -62,8 +74,7 @@ public class GerenciadorVeiculo {
             ps.setString(1, veiculo.getPlaca());
             ps.executeUpdate();
         } catch (SQLException ex) {
-            throw new ExcecaoSQL("Erro na instrução SQL: \n"
-                    + "[" + sql + "]\n" + ex.getMessage(), ex.getCause());
+            throw new ExcecaoSQL("Não é possivel remover o veículo selecionado! \n Veículo possui abastecimentos registrados");
         }
     }
 
@@ -79,9 +90,8 @@ public class GerenciadorVeiculo {
         }
         return resultSetParaList(rs);
     }
-    
-    
-     public ArrayList<Veiculo> pesquisaProprietario(String proprietario) throws ExcecaoConexao, ExcecaoSQL {
+
+    public ArrayList<Veiculo> pesquisaProprietario(String proprietario) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = P.IDPROPRIETARIO AND P.NOME LIKE ? ;";
         ResultSet rs = null;
         try {
@@ -94,8 +104,8 @@ public class GerenciadorVeiculo {
         }
         return resultSetParaList(rs);
     }
-     
-      public ArrayList<Veiculo> pesquisaStatus(String status) throws ExcecaoConexao, ExcecaoSQL {
+
+    public ArrayList<Veiculo> pesquisaStatus(String status) throws ExcecaoConexao, ExcecaoSQL {
         String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = V.IDPROPRIETARIO AND V.STATUS LIKE ? "
                 + "GROUP BY V.PLACA;";
         ResultSet rs = null;
@@ -170,8 +180,9 @@ public class GerenciadorVeiculo {
             Proprietario p = new Proprietario();
             p.setId(rs.getInt("P.IDPROPRIETARIO"));
             p.setNome(rs.getString("P.NOME"));
+            a.setModificado(rs.getString("V.MODIFICADO"));
             a.setProprietario(p);
-            
+
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Campos inexistentes da tabela de banco de dados.\n"
                     + "Msg: " + ex.getMessage(), ex.getCause());
@@ -180,11 +191,11 @@ public class GerenciadorVeiculo {
     }
 
     public int lastID() throws SQLException, ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT MAX(IDVEICULO) as idveiculo FROM veiculo";
+        String sql = "SELECT MAX(IDVEICULO) AS IDVEICULO FROM VEICULO";
         PreparedStatement stmt = (PreparedStatement) Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         rs.next();
-        int lastId = rs.getInt("idveiculo");
+        int lastId = rs.getInt("IDVEICULO");
         rs.close();
         stmt.close();
         return lastId + 1;
@@ -192,7 +203,7 @@ public class GerenciadorVeiculo {
 
     public boolean ValorExistente(String placa) throws ExcecaoSQL, SQLException, ExcecaoConexao {
         boolean result = true;
-        String sql = "select placa from veiculo where placa like '" + placa + "'";
+        String sql = "SELECT PLACA FROM VEICULO WHERE PLACA LIKE '" + placa + "'";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {

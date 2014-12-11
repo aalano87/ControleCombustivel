@@ -19,6 +19,7 @@ public class Veiculo {
     private String status;
     private String placa;
     private Proprietario proprietario;
+    private String modificado;
 
     @Override
     public String toString() {
@@ -93,6 +94,14 @@ public class Veiculo {
 
     public void setProprietario(Proprietario proprietario) {
         this.proprietario = proprietario;
+    }
+
+    public String getModificado() {
+        return modificado;
+    }
+
+    public void setModificado(String modificado) {
+        this.modificado = modificado;
     }
 
    

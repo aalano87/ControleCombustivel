@@ -5,7 +5,6 @@
  */
 package apresentacao;
 
-import static apresentacao.FrmTelaPrincipal.redimensionarTela;
 import dao.GerenciadorProprietario;
 import dao.GerenciadorVeiculo;
 import excecao.ExcecaoConexao;
@@ -19,6 +18,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import model.Proprietario;
 import model.Veiculo;
+import verificacao.Redimensionar;
+import static verificacao.Redimensionar.redimensionarTela;
 
 /**
  *
@@ -117,7 +118,7 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
         cbStatus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Próprio", "Terceiro" }));
         cbStatus.setSelectedIndex(-1);
 
-        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Caminhão", "Galão", "Máquina", "Utilitário" }));
+        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CAMINHÃO", "GALÃO", "MÁQUINA", "UTILITÁRIO" }));
         cbTipo.setSelectedIndex(-1);
 
         jPanel1.setLayout(new java.awt.GridLayout(1, 0));
@@ -228,12 +229,12 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
                     .addComponent(tfPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btPesquisar))
                 .addGap(31, 31, 31)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
         );
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel6.setText("Cadastro de Veículos");
+        jLabel6.setText("Gerenciar Veículos");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -246,8 +247,11 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
         );
 
+        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/relatorio.jpg"))); // NOI18N
         jMenu1.setText("Relatório");
+        jMenu1.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
 
+        jMenuItem1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         jMenuItem1.setText("Veículos");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -337,6 +341,7 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
             return;
         }
         tfPlaca.setEditable(false);
+        btSalvar.setEnabled(false);
     }//GEN-LAST:event_btPesquisarActionPerformed
 
     private void btAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAtualizarActionPerformed
@@ -384,7 +389,7 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         DialogRelatorioVeiculos rv = new DialogRelatorioVeiculos(null, true);
-        rv.setSize(redimensionarTela());
+        rv.setSize(Redimensionar.redimensionarTela());
         rv.setLocationRelativeTo(null);
         rv.dispose();
         rv.setUndecorated(true);
@@ -482,6 +487,7 @@ public class DialogCadastroVeiculo extends javax.swing.JDialog {
         cbStatus.setSelectedIndex(-1);
         cbTipo.setSelectedIndex(-1);
         cbProprietario.setSelectedIndex(-1);
+        btSalvar.setEnabled(true);
     }
 
     private Veiculo getDados() {

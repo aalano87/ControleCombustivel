@@ -13,6 +13,8 @@ package model;
 public class Proprietario {
     private int id;
     private String nome;
+    private String documento;
+    private String modificado;
 
     @Override
     public int hashCode() {
@@ -55,6 +57,22 @@ public class Proprietario {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
+    }
+
+    public String getModificado() {
+        return modificado;
+    }
+
+    public void setModificado(String modificado) {
+        this.modificado = modificado;
     }
 
     

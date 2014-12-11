@@ -50,7 +50,7 @@ public class EntradaTableModel extends AbstractTableModel {
                     return "";
                 }
             case 2:
-                return entradaCombustivel.getFornecedor();
+                return entradaCombustivel.getFornecedor().getNome();
             case 3:
                 return entradaCombustivel.getNf();
             case 4:
@@ -61,6 +61,8 @@ public class EntradaTableModel extends AbstractTableModel {
                 return NumberFormat.getCurrencyInstance().format(entradaCombustivel.getValorUnitario());
             case 7:
                 return NumberFormat.getCurrencyInstance().format(entradaCombustivel.getValorUnitario() * entradaCombustivel.getQtdeLitros());
+            case 8:
+                return entradaCombustivel.getModificado();
 
         }
         return null;
@@ -73,7 +75,7 @@ public class EntradaTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 9;
     }
 
     public EntradaCombustivel getValoresEntradaCombustivel(int rowIndex) {
