@@ -10,14 +10,21 @@ import dao.GerenciadorFornecedor;
 import dao.GerenciadorProprietario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import model.EntradaCombustivel;
 import model.Fornecedor;
 import model.Proprietario;
@@ -236,7 +243,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
                         .addGap(6, 6, 6)
                         .addComponent(jLabel1))
                     .addComponent(jDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(4, 4, 4)
@@ -380,30 +387,30 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     }//GEN-LAST:event_btFecharActionPerformed
 
     private void btPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPesquisarActionPerformed
-        String nf = tfNumeroNF.getText();
-        try {
-            obj = gerenciador.obterEntradaCombustivel(nf);
-        } catch (ExcecaoConexao ex) {
-            JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Entrada", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogEntradaCombustivel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExcecaoSQL ex) {
-            JOptionPane.showMessageDialog(this, "Falha na pesquisa.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Entrada", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogEntradaCombustivel.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Digite um número para pesquisar.");
-        }
-        try {
-            this.setDados(obj);
-        } catch (NullPointerException ex) {
-            return;
-        }
-        calcularTotal();
-        tfNumeroNF.setEditable(false);
-        cbFornecedor.setEnabled(false);
-        
+//        String nf = tfNumeroNF.getText();
+//        try {
+//            obj = gerenciador.obterEntradaCombustivel(nf);
+//        } catch (ExcecaoConexao ex) {
+//            JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
+//                    + "Msg.: " + ex.getMessage(), "Cadastro de Entrada", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(DialogEntradaCombustivel.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (ExcecaoSQL ex) {
+//            JOptionPane.showMessageDialog(this, "Falha na pesquisa.\n"
+//                    + "Msg.: " + ex.getMessage(), "Cadastro de Entrada", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(DialogEntradaCombustivel.class.getName()).log(Level.SEVERE, null, ex);
+//            return;
+//        } catch (NumberFormatException ex) {
+//            JOptionPane.showMessageDialog(rootPane, "Digite um número para pesquisar.");
+//        }
+//        try {
+//            this.setDados(obj);
+//        } catch (NullPointerException ex) {
+//            return;
+//        }
+//        calcularTotal();
+//        tfNumeroNF.setEditable(false);
+//        cbFornecedor.setEnabled(false);
+          jMenuItem1ActionPerformed(evt);
     }//GEN-LAST:event_btPesquisarActionPerformed
 
     private void tfNumeroNFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNumeroNFKeyReleased
@@ -427,6 +434,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     }//GEN-LAST:event_tfValorUnitarioKeyReleased
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        this.dispose();
         DialogRelatorioEntradas re = new DialogRelatorioEntradas(null, true);
         re.setSize(Redimensionar.redimensionarTela());
         re.setLocationRelativeTo(null);
@@ -481,7 +489,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
             }
         });
     }
-
+    
     private void limparCampos() {
         jDate.setDate(null);
         tfNumeroNF.setText(null);
@@ -491,6 +499,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         cbComprador.setSelectedIndex(-1);
         cbFornecedor.setSelectedIndex(-1);
         tfTotal.setText(null);
+        btSalvar.setEnabled(true);
     }
 
     private EntradaCombustivel getDados() {
@@ -506,7 +515,7 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         return obj;
     }
 
-    private void setDados(EntradaCombustivel obj) {
+    void setDados(EntradaCombustivel obj) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         this.jDate.setDate(obj.getData());
         this.tfNumeroNF.setText(obj.getNf());
@@ -571,6 +580,22 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
         cbFornecedor.setSelectedIndex(-1);
         System.out.println(listaFornecedor.get(0));
     }
+    
+    
+    protected JRootPane createRootPane(){
+        JRootPane rootPane = new JRootPane();
+        KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+        Action actionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent){
+                dispose();
+            }
+        };
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(stroke, "ESCAPE");
+        rootPane.getActionMap().put("ESCAPE", actionListener);
+        
+        return rootPane;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btAtualizar;
@@ -603,4 +628,8 @@ public class DialogEntradaCombustivel extends javax.swing.JDialog {
     private javax.swing.JTextField tfTotal;
     private javax.swing.JFormattedTextField tfValorUnitario;
     // End of variables declaration//GEN-END:variables
+
+    public javax.swing.JButton getBtSalvar() {
+        return btSalvar;
+    }
 }

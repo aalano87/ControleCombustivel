@@ -6,6 +6,7 @@
 package apresentacao;
 
 import conexao.Conexao;
+import dao.GerenciadorAbastecimento;
 import dao.GerenciadorUsuario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
@@ -21,12 +22,17 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import model.Usuario;
 import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import sessao.Sessao;
+import verificacao.EncriptaSenha;
+import verificacao.SplashScreen;
 
 public class FrmRealizarLogin extends javax.swing.JFrame {
 
     private GerenciadorUsuario gu = new GerenciadorUsuario();
-    private final double versaoAtual = 1.4;
+    private GerenciadorAbastecimento ga = new GerenciadorAbastecimento();
+        private final double versaoAtual = 2.14;
 
     /**
      * Creates new form FrmRealizarLogin
@@ -47,17 +53,15 @@ public class FrmRealizarLogin extends javax.swing.JFrame {
             } else if (x == 1) {
                 System.exit(0);
             }
-
         }
-
-        
     }
+    
 
     private void hiperlink() {
         Desktop desk = java.awt.Desktop.getDesktop();
         try {
-            desk.browse(new java.net.URI("https://www.dropbox.com/sh/2sy45nkbobq7r79/AAA_AKYiD33WzJD-gbOl8xpQa?dl=0"));
-        } catch (Exception e) {
+            desk.browse(new java.net.URI("https://drive.google.com/open?id=0BzJOQVfcuMYoXzFXNWRHRWZEZ00"));
+        } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -174,7 +178,7 @@ public class FrmRealizarLogin extends javax.swing.JFrame {
             telaPrincipal.setVisible(true);
             telaPrincipal.setSize(this.redimensionarTela());
             telaPrincipal.setLocationRelativeTo(null);
-            telaPrincipal.atualizarMes();
+            ga.atualizarMes();
             telaPrincipal.carregarID();
             telaPrincipal.carregarDadosVeiculoCombo();
             telaPrincipal.setExtendedState(MAXIMIZED_BOTH);
@@ -235,15 +239,21 @@ public class FrmRealizarLogin extends javax.swing.JFrame {
         FrmRealizarLogin login = new FrmRealizarLogin();
         login.dispose();
         login.setLocationRelativeTo(null);
+        SplashScreen.chamarSplash();
         login.setVisible(true);
 
     }
 
+    
+    
     private boolean autenticar() {
         boolean autenticado = false;
         ArrayList<Usuario> a = new ArrayList();
         char ConverterSenha[] = tfSenha.getPassword();
         String SenhaDigitada = new String(ConverterSenha);
+        
+        System.out.println(EncriptaSenha.encripta(SenhaDigitada));
+        
         Usuario user = null;
         try {
             a = gu.obterTodos();
@@ -254,7 +264,7 @@ public class FrmRealizarLogin extends javax.swing.JFrame {
         }
         for (int x = 0; x < a.size(); x++) {
             if (a.get(x).getNome().equalsIgnoreCase(tfLogin.getText())
-                    && a.get(x).getSenha().equalsIgnoreCase(SenhaDigitada)) {
+                    && a.get(x).getSenha().equalsIgnoreCase(EncriptaSenha.encripta(SenhaDigitada))) {
                 autenticado = true;
                 user = a.get(x);
             }

@@ -18,7 +18,7 @@ public class Redimensionar {
         if (System.getProperties().contains("Mac OS X")) {
             return (new Dimension(
                     (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
-                    (int) ((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight()) * 0.895))); //MacOS   
+                    (int) ((int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight()) * 0.91))); //MacOS   
         } else {
             return (new Dimension(
                     (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),

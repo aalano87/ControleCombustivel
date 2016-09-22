@@ -8,12 +8,19 @@ package apresentacao;
 import dao.GerenciadorProprietario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import javax.swing.text.MaskFormatter;
 import model.Proprietario;
 import verificacao.Redimensionar;
@@ -50,6 +57,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
         btSalvar.setEnabled(false);
+        limparCampos();
     }
 
     /**
@@ -75,6 +83,8 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         btFechar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         tfDocumento = new javax.swing.JTextField();
+        cbVendaDiesel = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         lbLogo = new javax.swing.JLabel();
@@ -155,12 +165,16 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
             }
         });
 
+        cbVendaDiesel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ELTRANS", "FRETEIRO", "JJ THOMAZI", "TERCEIROS" }));
+
+        jLabel3.setText("Venda Diesel:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,7 +189,11 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btPesquisar))
                             .addComponent(tfNome, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                            .addComponent(tfDocumento)))
+                            .addComponent(tfDocumento))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbVendaDiesel, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -188,7 +206,9 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btPesquisar))
+                    .addComponent(btPesquisar)
+                    .addComponent(cbVendaDiesel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -441,8 +461,10 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
     private javax.swing.JButton btPesquisar;
     private javax.swing.JButton btRemover;
     private javax.swing.JButton btSalvar;
+    private javax.swing.JComboBox<String> cbVendaDiesel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
@@ -471,6 +493,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         tfDocumento.setText(null);
         btSalvar.setEnabled(false);
         btSalvar.setVisible(true);
+        cbVendaDiesel.setSelectedIndex(-1);
     }
 
     private Proprietario getDados() {
@@ -482,6 +505,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         limpaDocumento = limpaDocumento.replace("-", "");
         limpaDocumento = limpaDocumento.replace("/", "");
         obj.setDocumento(limpaDocumento);
+        obj.setVendadiesel(cbVendaDiesel.getSelectedItem().toString());
         return obj;
     }
 
@@ -489,6 +513,7 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         this.tfCodigo.setText(String.valueOf(p.getId()));
         this.tfNome.setText(p.getNome());
         this.tfDocumento.setText(p.getDocumento());
+        this.cbVendaDiesel.setSelectedItem(p.getVendadiesel());
     }
 
     private boolean verificaDocumento(String documento) {
@@ -536,4 +561,20 @@ public class DialogCadastroProprietario extends javax.swing.JDialog {
         }
         return false;
     }
+    
+    protected JRootPane createRootPane(){
+        JRootPane rootPane = new JRootPane();
+        KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+        Action actionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent){
+                dispose();
+            }
+        };
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(stroke, "ESCAPE");
+        rootPane.getActionMap().put("ESCAPE", actionListener);
+        
+        return rootPane;
+    }
+    
 }

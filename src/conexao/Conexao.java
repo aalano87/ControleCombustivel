@@ -42,14 +42,15 @@ public class Conexao {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");//defina o driver do SGBD
-           // url = "jdbc:mysql://127.0.0.1:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD LOCAL
-            //url = "jdbc:mysql://192.168.1.53:3306/bd_controle_combustivel";//coloque o nome do seu banco de dados BD REDE INTERNA
-            url = "jdbc:mysql://179.127.174.110:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD REDE EXTERNA
+          //  url = "jdbc:mysql://127.0.0.1:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD LOCAL
+            url = "jdbc:mysql://192.168.1.213:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD REDE INTERNA
+          // url = "jdbc:mysql://189.45.207.59:3306/jjthomaz_combustivel";//coloque o nome do seu banco de dados BD REDE EXTERNA
+          // url = "jdbc:mysql://179.127.174.110:3306/postotest";//coloque o nome do seu banco de dados BD REDE EXTERNA
             //url = "jdbc:mysql://rbr37.dizinc.com:3306/jjthomaz_combustivel";//BD CPANEL
-            user = "root";//coloque o nome de usuário do seu banco de dados
-            // user = "jjthomaz";
+            user = "client";//coloque o nome de usuário do seu banco de dados
+           // user = "root";
             pass = "jjt813";//coloque a senha de acesso ao banco de dados
-            //pass = "QNUZO35j";//coloque a senha de acesso ao banco de dados
+           // pass = "";//coloque a senha de acesso ao banco de dados
             // pass = "jjth2012";
 
             connection = DriverManager.getConnection(url, user, pass);

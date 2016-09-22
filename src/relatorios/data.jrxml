@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d44884a5-5ccc-4e10-9a88-dbcd757118d3">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="Data1" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="Data2" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
 	<parameter name="Proprietario" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="Logo" class="java.awt.Image"/>
+	<parameter name="Mes" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Quinzena" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Ano" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[select a.id as a_id, a.data as a_data, a.litros as a_litros, a.motorista as a_motorista, a.km as a_km, a.horas as a_hs, v.idveiculo as v_idveiculo, v.idproprietario as v_idproprietario, v.placa as v_placa, v.tipo as v_tipo, p.idproprietario as p_idproprietario, p.nome as p_nome, e.valor_unitario as e_valor_unitario
+		<![CDATA[select a.id as a_id, a.mes as a_mes, a.quinzena as a_quinzena ,a.data as a_data, a.litros as a_litros, a.motorista as a_motorista, a.km as a_km, a.horas as a_hs, v.idveiculo as v_idveiculo, v.idproprietario as v_idproprietario, v.placa as v_placa, v.tipo as v_tipo, p.idproprietario as p_idproprietario, p.nome as p_nome, e.valor_unitario as e_valor_unitario, a.vlrunit as a_vlrunit
 
 from ABASTECIMENTO a
 inner join VEICULO v
@@ -22,12 +25,16 @@ on a.idveiculo = v.idveiculo
 inner join PROPRIETARIO p
 on v.idproprietario = p.IDPROPRIETARIO,
 ENTRADA e
-where a.data between $P{Data1} and $P{Data2}
+where a.mes = $P{Mes}
+and a.ano = $P{Ano}
+and a.quinzena like $P{Quinzena}
 and v.idproprietario = p.idproprietario
 and p.nome like $P{Proprietario}
 group by a.id order by a.data]]>
 	</queryString>
 	<field name="a_id" class="java.lang.Integer"/>
+	<field name="a_mes" class="java.lang.Integer"/>
+	<field name="a_quinzena" class="java.lang.String"/>
 	<field name="a_data" class="java.sql.Timestamp"/>
 	<field name="a_litros" class="java.lang.Float"/>
 	<field name="a_motorista" class="java.lang.String"/>
@@ -40,11 +47,12 @@ group by a.id order by a.data]]>
 	<field name="p_idproprietario" class="java.lang.Integer"/>
 	<field name="p_nome" class="java.lang.String"/>
 	<field name="e_valor_unitario" class="java.lang.Double"/>
+	<field name="a_vlrunit" class="java.lang.Double"/>
 	<variable name="litros_1" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{a_litros}]]></variableExpression>
 	</variable>
 	<variable name="total" class="java.lang.Double">
-		<variableExpression><![CDATA[$F{p_nome}.equals("JJ THOMAZI") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $F{p_nome}.equals("ELTRANS") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $V{litros_1} * 2.42]]></variableExpression>
+		<variableExpression><![CDATA[$F{p_nome}.equals("JJ THOMAZI") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $F{p_nome}.equals("ELTRANS") ? $V{litros_1} * $V{mediaVlrCompraDiesel} : $V{litros_1} * $F{a_vlrunit}]]></variableExpression>
 	</variable>
 	<variable name="mediaVlrCompraDiesel" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{e_valor_unitario}]]></variableExpression>
@@ -54,6 +62,9 @@ group by a.id order by a.data]]>
 	</variable>
 	<variable name="somaKm" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{v_placa}.equals($F{v_placa}) ? $F{a_km} : 0]]></variableExpression>
+	</variable>
+	<variable name="a_vlrunit_1" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{a_vlrunit}]]></variableExpression>
 	</variable>
 	<background>
 		<band splitType="Stretch"/>
@@ -73,26 +84,12 @@ group by a.id order by a.data]]>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="60" width="46" height="20" uuid="ecb27856-6b2c-4f47-a9f9-0ee8df622e6f"/>
+				<reportElement x="101" y="60" width="46" height="20" uuid="ecb27856-6b2c-4f47-a9f9-0ee8df622e6f"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Período:]]></text>
+				<text><![CDATA[Mês:]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="46" y="60" width="77" height="20" uuid="20e86619-bc00-4ecc-b77d-a89f55cdb15c"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$P{Data1}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="123" y="60" width="24" height="20" uuid="340891a2-7eb6-4cdf-a6bc-7694ec35ef55"/>
-				<textElement textAlignment="Center"/>
-				<text><![CDATA[até]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="147" y="60" width="100" height="20" uuid="9f28f48f-7539-456d-aee5-309ce4816359"/>
-				<textFieldExpression><![CDATA[$P{Data2}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="0" y="80" width="65" height="20" uuid="c7e51649-bb6a-49e4-8258-16a0bf83d330"/>
 				<textElement>
@@ -108,6 +105,46 @@ group by a.id order by a.data]]>
 				<reportElement x="0" y="0" width="147" height="59" uuid="efc800d5-7f51-4a96-a7be-6cc33fdbb094"/>
 				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
 			</image>
+			<staticText>
+				<reportElement x="313" y="81" width="100" height="20" uuid="9981e033-ae27-4b6d-8e6c-700a5e607b9d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Litro R$:]]></text>
+			</staticText>
+			<textField evaluationTime="Report" pattern="#,##0.00">
+				<reportElement x="401" y="81" width="100" height="20" uuid="2d1096a6-9f9b-4b5e-8776-d8cfedd7cbe2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{a_vlrunit_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="147" y="60" width="100" height="20" uuid="4faf9ddd-d5ad-4039-84c9-5e539a690189"/>
+				<textFieldExpression><![CDATA[$P{Mes}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="248" y="60" width="50" height="20" uuid="d337018f-9f3d-4ec2-902b-608420f8750d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quinzena:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="298" y="60" width="100" height="20" uuid="769c98c9-b09a-443b-87ac-83e80f20df3a"/>
+				<textFieldExpression><![CDATA[$P{Quinzena}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="60" width="30" height="20" uuid="317bf19c-ffe1-460c-a05d-8d07a3862acb"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ano:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="31" y="60" width="70" height="20" uuid="d0d17244-798b-448e-8159-18bd4441aff4"/>
+				<textFieldExpression><![CDATA[$P{Ano}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>

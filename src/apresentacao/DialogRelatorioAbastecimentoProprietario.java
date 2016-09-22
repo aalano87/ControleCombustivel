@@ -10,15 +10,22 @@ import dao.GerenciadorProprietario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
 import static java.awt.Frame.MAXIMIZED_BOTH;
+import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import model.Proprietario;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -261,6 +268,21 @@ public class DialogRelatorioAbastecimentoProprietario extends javax.swing.JDialo
         }
     }
      
+     
+     protected JRootPane createRootPane(){
+        JRootPane rootPane = new JRootPane();
+        KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+        Action actionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent){
+                dispose();
+            }
+        };
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(stroke, "ESCAPE");
+        rootPane.getActionMap().put("ESCAPE", actionListener);
+        
+        return rootPane;
+    }
    
      
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -274,5 +296,7 @@ public class DialogRelatorioAbastecimentoProprietario extends javax.swing.JDialo
     private javax.swing.JLabel lbLogo;
     // End of variables declaration//GEN-END:variables
 }
+
+
 
 

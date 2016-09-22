@@ -8,12 +8,20 @@ package apresentacao;
 import dao.GerenciadorUsuario;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import model.Usuario;
+import verificacao.EncriptaSenha;
 import verificacao.Redimensionar;
 import static verificacao.Redimensionar.redimensionarTela;
 import verificacao.ValidarCPF;
@@ -485,7 +493,7 @@ public class DialogCadastroUsuario extends javax.swing.JDialog {
         String cpf = tfCpf.getText().replace(".", "");
         cpf = cpf.replace("-", "");
         obj.setCpf(cpf);
-        obj.setSenha(SenhaDigitada);
+        obj.setSenha(EncriptaSenha.encripta(SenhaDigitada));
         return obj;
     }
 
@@ -523,6 +531,22 @@ public class DialogCadastroUsuario extends javax.swing.JDialog {
             return true;
         }
         return false;
+    }
+    
+    
+    protected JRootPane createRootPane(){
+        JRootPane rootPane = new JRootPane();
+        KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+        Action actionListener = new AbstractAction() {
+            public void actionPerformed(ActionEvent actionEvent){
+                dispose();
+            }
+        };
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(stroke, "ESCAPE");
+        rootPane.getActionMap().put("ESCAPE", actionListener);
+        
+        return rootPane;
     }
 
 }

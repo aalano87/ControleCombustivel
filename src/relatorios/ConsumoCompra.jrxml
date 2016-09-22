@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c47b5768-78ce-491b-879b-4df8874f42e4">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="112"/>
+	<property name="ireport.x" value="13"/>
+	<property name="ireport.y" value="176"/>
 	<parameter name="Data1" class="java.util.Date">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -10,24 +10,12 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     abastecimento.`id` AS abastecimento_id,
-     abastecimento.`data` AS abastecimento_data,
-     abastecimento.`idveiculo` AS abastecimento_idveiculo,
-     abastecimento.`km` AS abastecimento_km,
-     abastecimento.`horas` AS abastecimento_horas,
-     abastecimento.`litros` AS abastecimento_litros,
-     abastecimento.`motorista` AS abastecimento_motorista
-FROM
-     `abastecimento` abastecimento]]>
+		<![CDATA[CALL `jjthomaz_combustivel`.`LitrosComprados`($P{Data1},$P{Data2});]]>
 	</queryString>
-	<field name="abastecimento_id" class="java.lang.Integer"/>
-	<field name="abastecimento_data" class="java.sql.Timestamp"/>
-	<field name="abastecimento_idveiculo" class="java.lang.Integer"/>
-	<field name="abastecimento_km" class="java.lang.Integer"/>
-	<field name="abastecimento_horas" class="java.lang.Integer"/>
-	<field name="abastecimento_litros" class="java.lang.Float"/>
-	<field name="abastecimento_motorista" class="java.lang.String"/>
+	<field name="NOME" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="litros_comprados" class="java.lang.Double"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -80,35 +68,31 @@ FROM
 	<pageHeader>
 		<band height="44">
 			<elementGroup/>
-			<subreport>
-				<reportElement x="316" y="0" width="200" height="44" uuid="78746310-cb5a-4601-a80a-a5f8f0f83364"/>
-				<subreportParameter name="Data2">
-					<subreportParameterExpression><![CDATA[$P{Data2}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="Data1">
-					<subreportParameterExpression><![CDATA[$P{Data1}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["/Users/aalano/Dropbox/IFSC/2014/Projeto Integrador/2º Semestre/ProjetoPostoCombustivel/src/relatorios/ConsumoCompra_subreport4.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="0" y="0" width="200" height="44" uuid="99b2997d-9a32-4777-8b33-484200502fee"/>
-				<subreportParameter name="Data2">
-					<subreportParameterExpression><![CDATA[$P{Data2}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="Data1">
-					<subreportParameterExpression><![CDATA[$P{Data1}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["/Users/aalano/Dropbox/IFSC/2014/Projeto Integrador/2º Semestre/ProjetoPostoCombustivel/src/relatorios/Compra.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="53" splitType="Stretch"/>
+		<band height="53" splitType="Stretch">
+			<staticText>
+				<reportElement x="40" y="2" width="100" height="20" uuid="621ab1ed-93ce-4e85-8873-49753a391d5d"/>
+				<text><![CDATA[NOME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="146" y="2" width="100" height="20" uuid="e2c66a5f-aee7-4fb5-97dd-fe8a0b10df29"/>
+				<text><![CDATA[litros_comprados]]></text>
+			</staticText>
+		</band>
 	</columnHeader>
 	<detail>
-		<band height="45" splitType="Stretch"/>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="40" y="12" width="100" height="20" uuid="4148e546-a4e6-4391-9388-7eecbcab3f9b"/>
+				<textFieldExpression><![CDATA[$F{NOME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="12" width="100" height="20" uuid="0643a62d-018d-48ae-af96-de03bce42eba"/>
+				<textFieldExpression><![CDATA[$F{litros_comprados}]]></textFieldExpression>
+			</textField>
+		</band>
 	</detail>
 	<summary>
 		<band height="50"/>

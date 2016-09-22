@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ac63afeb-0cf1-4284-bbd5-d07f492f430c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DataInicio" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DataFim" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Logo" class="java.awt.Image"/>
+	<parameter name="Proprietario" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     abastecimento.`ID` AS abastecimento_ID,
+     abastecimento.`DATA` AS abastecimento_DATA,
+     abastecimento.`IDVEICULO` AS abastecimento_IDVEICULO,
+     abastecimento.`KM` AS abastecimento_KM,
+     abastecimento.`HORAS` AS abastecimento_HORAS,
+     sum(abastecimento.`LITROS`) AS abastecimento_LITROS,
+     abastecimento.`MOTORISTA` AS abastecimento_MOTORISTA,
+     abastecimento.`MES` AS abastecimento_MES,
+     abastecimento.`MODIFICADO` AS abastecimento_MODIFICADO,
+     abastecimento.`VLRUNIT` AS abastecimento_VLRUNIT,
+     sum(abastecimento.`TOTALRS`) AS abastecimento_TOTALRS,
+     proprietario.`IDPROPRIETARIO` AS proprietario_IDPROPRIETARIO,
+     proprietario.`NOME` AS proprietario_NOME,
+     proprietario.`DOCUMENTO` AS proprietario_DOCUMENTO,
+     proprietario.`MODIFICADO` AS proprietario_MODIFICADO,
+     veiculo.`IDVEICULO` AS veiculo_IDVEICULO,
+     veiculo.`TIPO` AS veiculo_TIPO,
+     veiculo.`VEICULO` AS veiculo_VEICULO,
+     veiculo.`STATUS` AS veiculo_STATUS,
+     veiculo.`PLACA` AS veiculo_PLACA,
+     veiculo.`IDPROPRIETARIO` AS veiculo_IDPROPRIETARIO,
+     veiculo.`MODIFICADO` AS veiculo_MODIFICADO
+FROM
+     `proprietario` proprietario INNER JOIN `veiculo` veiculo ON proprietario.`IDPROPRIETARIO` = veiculo.`IDPROPRIETARIO`
+     INNER JOIN `abastecimento` abastecimento ON veiculo.`IDVEICULO` = abastecimento.`IDVEICULO`
+where abastecimento. data between $P{DataInicio} and $P{DataFim} and proprietario.nome like  $P{Proprietario}
+group by veiculo.placa order by proprietario.nome]]>
+	</queryString>
+	<field name="abastecimento_ID" class="java.lang.Integer"/>
+	<field name="abastecimento_DATA" class="java.sql.Timestamp"/>
+	<field name="abastecimento_IDVEICULO" class="java.lang.Integer"/>
+	<field name="abastecimento_KM" class="java.lang.Integer"/>
+	<field name="abastecimento_HORAS" class="java.lang.Integer"/>
+	<field name="abastecimento_LITROS" class="java.lang.Double"/>
+	<field name="abastecimento_MOTORISTA" class="java.lang.String"/>
+	<field name="abastecimento_MES" class="java.lang.Integer"/>
+	<field name="abastecimento_MODIFICADO" class="java.lang.String"/>
+	<field name="abastecimento_VLRUNIT" class="java.lang.Double"/>
+	<field name="abastecimento_TOTALRS" class="java.lang.Double"/>
+	<field name="proprietario_IDPROPRIETARIO" class="java.lang.Integer"/>
+	<field name="proprietario_NOME" class="java.lang.String"/>
+	<field name="proprietario_DOCUMENTO" class="java.lang.String"/>
+	<field name="proprietario_MODIFICADO" class="java.lang.String"/>
+	<field name="veiculo_IDVEICULO" class="java.lang.Integer"/>
+	<field name="veiculo_TIPO" class="java.lang.String"/>
+	<field name="veiculo_VEICULO" class="java.lang.String"/>
+	<field name="veiculo_STATUS" class="java.lang.String"/>
+	<field name="veiculo_PLACA" class="java.lang.String"/>
+	<field name="veiculo_IDPROPRIETARIO" class="java.lang.Integer"/>
+	<field name="veiculo_MODIFICADO" class="java.lang.String"/>
+	<variable name="veiculo_PLACA_1" class="java.lang.Integer" resetType="Column" calculation="DistinctCount">
+		<variableExpression><![CDATA[$F{veiculo_PLACA}]]></variableExpression>
+	</variable>
+	<variable name="SomaLitros" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{abastecimento_LITROS}]]></variableExpression>
+	</variable>
+	<variable name="TotalR$" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{abastecimento_TOTALRS}]]></variableExpression>
+	</variable>
+	<variable name="abastecimento_TOTALRS_1" class="java.lang.Double" resetType="Group" resetGroup="Proprietario" calculation="Sum">
+		<variableExpression><![CDATA[$F{abastecimento_TOTALRS}]]></variableExpression>
+	</variable>
+	<group name="Proprietario">
+		<groupExpression><![CDATA[$F{proprietario_NOME}]]></groupExpression>
+		<groupHeader>
+			<band height="21">
+				<textField>
+					<reportElement x="0" y="0" width="117" height="20" uuid="25d4ae05-57ac-4542-8038-aaded26c3363"/>
+					<textFieldExpression><![CDATA[$F{proprietario_NOME}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="0" width="555" height="1" uuid="9f0a2059-97b0-41c0-9425-de5189ff2372"/>
+				</line>
+			</band>
+			<band height="11">
+				<staticText>
+					<reportElement x="117" y="0" width="100" height="10" uuid="20d9aa6f-c6d1-4c4b-af58-163b5484d56a"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LITROS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="217" y="0" width="100" height="10" uuid="1c29e913-fece-46bd-ba46-3fe6c498c57c"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL R$]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="0" width="117" height="10" uuid="d629c035-49e8-412a-8a27-db26670d4445"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PLACAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="317" y="0" width="100" height="11" uuid="ce7b45f6-4432-4649-823a-8754cca984a3"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VEICULO]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="20" width="147" height="59" uuid="63f4b5d7-a81b-4215-99e2-b896adb52dd6"/>
+				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="147" y="25" width="408" height="54" uuid="e7fe7142-0294-4f29-b1ef-a614266f2430"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Relatório Período Detalhado Placa]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="1" width="555" height="24" uuid="d1a78515-165d-4fe2-b2aa-24292a69f2b2"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="46" height="20" uuid="41a7bb04-a84e-4e14-b7af-639b45b2eaf0"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="47" y="0" width="100" height="20" uuid="7b6d435b-7d5d-4739-84f0-5d2705245f72"/>
+				<textFieldExpression><![CDATA[$P{DataInicio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="147" y="0" width="20" height="20" uuid="32798dde-67a9-4820-996a-de1e610071f0"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[até]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="167" y="0" width="100" height="20" uuid="88a35e31-4c87-4a7f-b506-188b78bb4821"/>
+				<textFieldExpression><![CDATA[$P{DataFim}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="3" width="117" height="20" uuid="227c71c8-da75-4b93-819e-fdba08ecd8f5"/>
+				<textFieldExpression><![CDATA[$F{veiculo_PLACA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="317" y="3" width="100" height="20" uuid="68fac293-1adc-473b-8950-d3866e2a8ab3"/>
+				<textFieldExpression><![CDATA[$F{veiculo_VEICULO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="117" y="3" width="100" height="20" uuid="ddb293d1-dd24-49ec-a2e6-c0076a336870"/>
+				<textFieldExpression><![CDATA[$F{abastecimento_LITROS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="217" y="3" width="100" height="20" uuid="efc0d9e0-bf51-4fa4-b55b-3def53223811"/>
+				<textFieldExpression><![CDATA[$F{abastecimento_TOTALRS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="448" y="34" width="67" height="20" uuid="bc5dcf64-0b0a-408e-aa2d-bf6321880347"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="34" width="40" height="20" uuid="65d78bd6-127e-41ac-958e-dbd8d5dc37e5"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

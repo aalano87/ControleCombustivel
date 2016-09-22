@@ -38,7 +38,7 @@ public class AbastecimentoColumnModel extends DefaultTableColumnModel{
     public AbastecimentoColumnModel(FontMetrics fm) {
         int digito = fm.stringWidth("0");
         int letra = fm.stringWidth("M");
-        addColumn(criaColuna(0, 7 * digito, fm, false, "Código"));
+        addColumn(criaColuna(0, 9 * digito, fm, false, "Código"));
         addColumn(criaColuna(1, 18 * digito, fm, false, "Data"));
         addColumn(criaColuna(2, 9 * letra, fm, false, "Placa"));
         addColumn(criaColuna(3, 20 * letra, fm, false, "Veículo"));

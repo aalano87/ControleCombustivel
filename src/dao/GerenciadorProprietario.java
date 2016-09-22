@@ -31,14 +31,14 @@ public class GerenciadorProprietario {
 
     public void inserir(Proprietario proprietario) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO PROPRIETARIO(NOME, DOCUMENTO, MODIFICADO) "
-                + "VALUES (?,?,?);";
+                = "INSERT INTO PROPRIETARIO(NOME, DOCUMENTO, MODIFICADO, VENDADIESEL) "
+                + "VALUES (?,?,?,?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, proprietario.getNome());
             ps.setString(2, proprietario.getDocumento());
             ps.setString(3, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
-
+            ps.setString(4, proprietario.getVendadiesel());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -47,14 +47,15 @@ public class GerenciadorProprietario {
     }
 
     public void atualizar(Proprietario proprietario) throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "UPDATE PROPRIETARIO SET NOME = ?, DOCUMENTO = ?, MODIFICADO = ? "
+        String sql = "UPDATE PROPRIETARIO SET NOME = ?, DOCUMENTO = ?, MODIFICADO = ?, VENDADIESEL = ? "
                 + " WHERE IDPROPRIETARIO = ?";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setString(1, proprietario.getNome());
             ps.setString(2, proprietario.getDocumento());
             ps.setString(3, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
-            ps.setInt(4, proprietario.getId());
+            ps.setString(4, proprietario.getVendadiesel());
+            ps.setInt(5, proprietario.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -122,6 +123,7 @@ public class GerenciadorProprietario {
             a.setNome(rs.getString("NOME"));
             a.setDocumento(rs.getString("DOCUMENTO"));
             a.setModificado(rs.getString("MODIFICADO"));
+            a.setVendadiesel(rs.getString("VENDADIESEL"));
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Campos inexistentes da tabela de banco de dados.\n"
                     + "Msg: " + ex.getMessage(), ex.getCause());

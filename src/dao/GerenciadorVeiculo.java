@@ -106,7 +106,7 @@ public class GerenciadorVeiculo {
     }
 
     public ArrayList<Veiculo> pesquisaStatus(String status) throws ExcecaoConexao, ExcecaoSQL {
-        String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = V.IDPROPRIETARIO AND V.STATUS LIKE ? "
+        String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = P.IDPROPRIETARIO AND V.STATUS LIKE ? "
                 + "GROUP BY V.PLACA;";
         ResultSet rs = null;
         try {
@@ -153,7 +153,7 @@ public class GerenciadorVeiculo {
     }
 
     public Veiculo obterVeiculo() throws ExcecaoSQL, ExcecaoConexao {
-        String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = V.IDPROPRIETARIO;";
+        String sql = "SELECT * FROM VEICULO V, PROPRIETARIO P WHERE V.IDPROPRIETARIO = P.IDPROPRIETARIO;";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -180,6 +180,7 @@ public class GerenciadorVeiculo {
             Proprietario p = new Proprietario();
             p.setId(rs.getInt("P.IDPROPRIETARIO"));
             p.setNome(rs.getString("P.NOME"));
+            p.setVendadiesel(rs.getString("P.VENDADIESEL"));
             a.setModificado(rs.getString("V.MODIFICADO"));
             a.setProprietario(p);
 

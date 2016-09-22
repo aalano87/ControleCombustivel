@@ -21,7 +21,7 @@ public class Abastecimento {
     private int horas;
     private int km;
     private String modificado;
-    
+    //private double vlrunit = 2.76; 
     
     @Override
     public int hashCode() {
@@ -109,6 +109,8 @@ public class Abastecimento {
     public void setModificado(String modificado) {
         this.modificado = modificado;
     }
+
+    
 
     
 }

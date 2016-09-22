@@ -14,6 +14,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import model.Abastecimento;
 import model.Proprietario;
 import model.Veiculo;
@@ -33,8 +36,8 @@ public class GerenciadorAbastecimento {
     
     public void inserir(Abastecimento abastecimento) throws ExcecaoConexao, ExcecaoSQL {
         String sql
-                = "INSERT INTO ABASTECIMENTO (DATA, MOTORISTA, KM ,HORAS, LITROS, IDVEICULO, MODIFICADO) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?);";
+                = "INSERT INTO ABASTECIMENTO (DATA, MOTORISTA, KM ,HORAS, LITROS, IDVEICULO, MODIFICADO, VLRUNIT, IDPROPRIETARIO) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
             ps.setDate(1, new java.sql.Date(abastecimento.getData().getTime()));
@@ -44,6 +47,20 @@ public class GerenciadorAbastecimento {
             ps.setFloat(5, abastecimento.getLitros());
             ps.setInt(6, abastecimento.getVeiculo().getId());
             ps.setString(7, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
+//            if (abastecimento.getVeiculo().getProprietario().getNome().equals("JJ THOMAZI") ||
+//                    abastecimento.getVeiculo().getProprietario().getNome().equals("ELTRANS/TGL")){
+//                        ps.setDouble(8, precoCusto());
+//                    }else{
+//            ps.setDouble(8, new GerenciadorValorVenda().maxValor());
+//            }
+            if (abastecimento.getVeiculo().getProprietario().getVendadiesel().equals("JJ THOMAZI") ||
+                    abastecimento.getVeiculo().getProprietario().getVendadiesel().equals("ELTRANS")){
+                ps.setDouble(8, precoCusto());
+            }else {
+                ps.setDouble(8, new GerenciadorValorVenda().maxValor());
+            }
+
+            ps.setInt(9, abastecimento.getVeiculo().getProprietario().getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -53,7 +70,8 @@ public class GerenciadorAbastecimento {
 
     public void atualizar(Abastecimento abastecimento) throws ExcecaoSQL, ExcecaoConexao {
         String sql = "UPDATE ABASTECIMENTO SET DATA = ?, MOTORISTA = ?, "
-                + "KM = ?, HORAS = ?, LITROS = ?, MODIFICADO = ? "
+                + "KM = ?, HORAS = ?, LITROS = ?, MODIFICADO = ?, IDVEICULO = ?, "
+                + "IDPROPRIETARIO = ? "
                 + " WHERE ID = ? ";
         try {
             PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
@@ -63,7 +81,9 @@ public class GerenciadorAbastecimento {
             ps.setInt(4, abastecimento.getHoras());
             ps.setFloat(5, abastecimento.getLitros());
             ps.setString(6, Sessao.getInstance().getUsuario().toString() + " " + getDateTime());
-            ps.setInt(7, abastecimento.getId());
+            ps.setInt(7, abastecimento.getVeiculo().getId());
+            ps.setInt(8, abastecimento.getVeiculo().getProprietario().getId());
+            ps.setInt(9, abastecimento.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução SQL: \n"
@@ -218,7 +238,7 @@ public class GerenciadorAbastecimento {
                 Abastecimento a = transformarResultSetEmObjeto(rs);
                 return a;
             } else {
-                throw new ExcecaoSQL("Não há abastecimento com este ID.\n");
+              return null;
             }
         } catch (SQLException ex) {
             throw new ExcecaoSQL("Erro na instrução sql: " + sql + ".\n"
@@ -266,6 +286,7 @@ public class GerenciadorAbastecimento {
             Proprietario p = new Proprietario();
             p.setId(rs.getInt("P.IDPROPRIETARIO"));
             p.setNome(rs.getString("P.NOME"));
+            p.setVendadiesel(rs.getString("P.VENDADIESEL"));
             v.setProprietario(p);
             obj.setVeiculo(v);
             obj.setModificado(rs.getString("A.MODIFICADO"));
@@ -340,6 +361,7 @@ public class GerenciadorAbastecimento {
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             result = rs.getFloat("QTDE_LITROS");
+            System.out.println("litros entrada" + result);
             return result;
         }
         return 0;
@@ -352,8 +374,89 @@ public class GerenciadorAbastecimento {
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             result = rs.getFloat("LITROS");
+              System.out.println("litros saida" + result);
             return result;
         }
         return 0;
     }
+    
+    public double precoCusto() throws ExcecaoConexao,SQLException, ExcecaoConexao, ExcecaoSQL {
+        double result = 0;
+        String sql = "SELECT AVG(VALOR_UNITARIO) AS VALOR_UNITARIO FROM ENTRADA  WHERE DATA > '2015/01/01';";
+        PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            result = rs.getDouble("VALOR_UNITARIO");
+            return result;
+        }
+        return 0;
+    }
+    
+    public void updateValor() {
+        PreparedStatement ps;
+        try {
+            ps = Conexao.getConnection().prepareStatement("UPDATE ABASTECIMENTO A SET A.VLRUNIT = (SELECT VALOR FROM VALORVENDA WHERE ID = (SELECT MAX(ID) FROM VALORVENDA)) \n" +
+"WHERE A.DATA >= (SELECT MAX(DATA) FROM VALORVENDA) AND A.IDPROPRIETARIO  > 3 AND A.IDPROPRIETARIO < 18 OR\n" +
+"A.DATA >= (SELECT MAX(DATA) FROM VALORVENDA) AND A.IDPROPRIETARIO  < 2 OR"
+                    + " A.DATA >= (SELECT MAX(DATA) FROM VALORVENDA) AND A.IDPROPRIETARIO  = 20;");
+            ps.executeUpdate();
+        } catch (ExcecaoConexao | ExcecaoSQL | SQLException ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }
+    
+     public void atualizarQuinzena() {
+        PreparedStatement ps;
+        PreparedStatement ps2;
+        try{
+            ps = Conexao.getConnection().prepareStatement("call sp_1_quinz;");
+            ps.executeQuery();
+            ps2 = Conexao.getConnection().prepareStatement("call sp_2_quinz;");
+            ps2.executeQuery();
+        } catch (ExcecaoConexao ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExcecaoSQL ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     }
+     
+      public void atualizarMes() {
+        PreparedStatement ps;
+        PreparedStatement ps2;
+        try {
+            ps = Conexao.getConnection().prepareStatement("UPDATE ABASTECIMENTO SET MES = MONTH(ABASTECIMENTO.DATA);");
+            ps.executeUpdate();
+            ps2 = Conexao.getConnection().prepareStatement("UPDATE ABASTECIMENTO SET ANO = YEAR(ABASTECIMENTO.DATA);");
+            ps2.executeUpdate();
+        } catch (ExcecaoConexao ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExcecaoSQL ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void atualizarMesEntrada() {
+        PreparedStatement ps;
+        PreparedStatement ps2;
+        try {
+            ps = Conexao.getConnection().prepareStatement("UPDATE ENTRADA SET MES = MONTH(ENTRADA.DATA);");
+            ps.executeUpdate();
+            ps2 = Conexao.getConnection().prepareStatement("UPDATE ENTRADA SET ANO = YEAR(ENTRADA.DATA);");
+            ps2.executeUpdate();
+        } catch (ExcecaoConexao ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExcecaoSQL ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(GerenciadorAbastecimento.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    
 }

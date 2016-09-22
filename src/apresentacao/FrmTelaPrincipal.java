@@ -5,13 +5,11 @@
  */
 package apresentacao;
 
-import conexao.Conexao;
 import dao.GerenciadorAbastecimento;
 import dao.GerenciadorVeiculo;
 import excecao.ExcecaoConexao;
 import excecao.ExcecaoSQL;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -21,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import model.Abastecimento;
 import model.Veiculo;
@@ -28,6 +27,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
+import static verificacao.CalcularVlrDiesel.atualizarTotal;
 import verificacao.Redimensionar;
 
 /**
@@ -45,10 +45,18 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
      */
     public FrmTelaPrincipal() {
         setUndecorated(true);
-        atualizarMes();
+        /**
+         * mudar para dentro do gerenciador
+         */
+        gerenciador.atualizarMes();
+        gerenciador.atualizarMesEntrada();
+        gerenciador.updateValor();
+        gerenciador.atualizarQuinzena();
+        atualizarTotal();
         initComponents();
         testarConexao();
         carregarID();
+
         try {
             carregarDadosVeiculoCombo();
         } catch (NullPointerException ex) {
@@ -57,7 +65,8 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
 
         ImageIcon icone = criarImageIcon("/icon/logo2.jpg", "");
         lbLogo.setIcon(icone);
-        System.out.println(System.getProperties());
+        //      System.out.println(System.getProperties());
+
     }
 
     /**
@@ -99,6 +108,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         lbSaldoDisponivel = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
@@ -107,14 +117,17 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuReajustarPreco = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jmSair = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Controle de Combustível");
@@ -322,10 +335,10 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(lbLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lbLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -335,15 +348,19 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         lbSaldoDisponivel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbSaldoDisponivel.setText("jLabel9");
 
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/gasoline.png"))); // NOI18N
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbSaldoDisponivel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbSaldoDisponivel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel9))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,7 +369,9 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbSaldoDisponivel)
-                .addContainerGap(227, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -363,19 +382,19 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(52, 52, 52)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addGap(43, 43, 43))
         );
 
         jMenuBar1.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
@@ -433,6 +452,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem2);
+
+        jMenuReajustarPreco.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuReajustarPreco.setText("Reajustar Preço de Combustível");
+        jMenuReajustarPreco.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuReajustarPrecoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuReajustarPreco);
         jMenu1.add(jSeparator2);
 
         jmSair.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
@@ -450,7 +478,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jMenu2.setText("Relatórios");
         jMenu2.setFont(new java.awt.Font("Lucida Grande", 1, 24)); // NOI18N
 
-        jMenuItem3.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem3.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
         jMenuItem3.setText("Relação de Abastecimentos");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -460,8 +488,17 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         jMenu2.add(jMenuItem3);
         jMenu2.add(jSeparator1);
 
-        jMenuItem4.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
-        jMenuItem4.setText("Abastecimentos Proprietário");
+        jMenuItem11.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
+        jMenuItem11.setText("Agrupado Tipo");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem11);
+
+        jMenuItem4.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
+        jMenuItem4.setText("Detalhado");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem4ActionPerformed(evt);
@@ -469,7 +506,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem4);
 
-        jMenuItem5.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem5.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
         jMenuItem5.setText("Data e Proprietário");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -478,7 +515,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem5);
 
-        jMenuItem6.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        jMenuItem6.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
         jMenuItem6.setText("Compra x Consumo");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -487,6 +524,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem6);
         jMenuItem6.setVisible(false);
+
+        jMenuItem10.setFont(new java.awt.Font("Lucida Sans", 1, 18)); // NOI18N
+        jMenuItem10.setText("Período");
+        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem10ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem10);
 
         jMenuBar1.add(jMenu2);
 
@@ -504,13 +550,14 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        this.limparCampos();
         DialogCadastroVeiculo cv = new DialogCadastroVeiculo(this, true);
         cv.setLocationRelativeTo(null);
         cv.setSize(Redimensionar.redimensionarTela());
@@ -521,6 +568,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        this.limparCampos();
         DialogEntradaCombustivel ec = new DialogEntradaCombustivel(this, true);
         ec.setLocationRelativeTo(null);
         ec.setSize(Redimensionar.redimensionarTela());
@@ -563,6 +611,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btSalvarActionPerformed
 
     private void btAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAtualizarActionPerformed
+
         try {
             obj = this.getDados();
         } catch (NullPointerException | NumberFormatException ex) {
@@ -610,7 +659,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btCancelarActionPerformed
 
     private void btFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFecharActionPerformed
-        System.exit(0);
+        if (JOptionPane.showConfirmDialog(rootPane, "Você deseja realmente sair do sistema?", "", JOptionPane.YES_NO_OPTION) == 0) {
+            gerenciador.atualizarMes();
+            gerenciador.atualizarMesEntrada();
+            gerenciador.updateValor();
+            gerenciador.atualizarQuinzena();
+            atualizarTotal();
+            System.exit(0);
+        }
+
     }//GEN-LAST:event_btFecharActionPerformed
 
     private void tfLitrosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfLitrosKeyReleased
@@ -630,34 +687,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_tfKmHsKeyReleased
 
     private void btPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPesquisarActionPerformed
-        try {
-            obj = gerenciador.obterAbastecimento(Integer.valueOf(JOptionPane.showInputDialog("Digite o código a ser pesquisado")));
-        } catch (ExcecaoConexao ex) {
-            JOptionPane.showMessageDialog(this, "Falha na conexão com o banco de dados.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Autor", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogCadastroVeiculo.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExcecaoSQL ex) {
-            JOptionPane.showMessageDialog(this, "Falha na pesquisa.\n"
-                    + "Msg.: " + ex.getMessage(), "Cadastro de Autor", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DialogCadastroVeiculo.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Digite um número para pesquisar.");
-        }
-        try {
-            this.setDados(obj);
-        } catch (NullPointerException ex) {
-            return;
-        }
-        btSalvar.setEnabled(false);
+        jMenuItem3ActionPerformed(evt);
     }//GEN-LAST:event_btPesquisarActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         estoqueLitros();
-        
     }//GEN-LAST:event_formWindowActivated
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        this.limparCampos();
         DialogRelatorioAbastecimentos ra = new DialogRelatorioAbastecimentos(this, true);
         ra.setSize(Redimensionar.redimensionarTela());
         ra.setLocationRelativeTo(null);
@@ -671,17 +709,19 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jmSairActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        DialogRelatorioAbastecimentoProprietario rap = new DialogRelatorioAbastecimentoProprietario(this, true);
-        rap.setLocationRelativeTo(null);
-        rap.setSize(Redimensionar.redimensionarTela());
-        rap.setLocationRelativeTo(null);
-        rap.dispose();
-        rap.setUndecorated(true);
-        rap.setModal(false);
-        rap.setVisible(true);
+        this.limparCampos();
+        DialogRelatorioPlacaDetalhado rpd = new DialogRelatorioPlacaDetalhado(this, true);
+        rpd.setLocationRelativeTo(null);
+        rpd.setSize(Redimensionar.redimensionarTela());
+        rpd.setLocationRelativeTo(null);
+        rpd.dispose();
+        rpd.setUndecorated(true);
+        rpd.setModal(false);
+        rpd.setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        this.limparCampos();
         DialogRelatorioData rd = new DialogRelatorioData(this, true);
         //rd.dispose();
         //rd.setUndecorated(true);
@@ -692,6 +732,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        this.limparCampos();
         DialogRelatorioCompraConsumo cc = new DialogRelatorioCompraConsumo(this, true);
         cc.setSize(Redimensionar.redimensionarTela());
         cc.setLocationRelativeTo(null);
@@ -702,6 +743,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        this.limparCampos();
         DialogCadastroProprietario cp = new DialogCadastroProprietario(this, true);
         cp.setSize(Redimensionar.redimensionarTela());
         cp.setLocationRelativeTo(null);
@@ -712,6 +754,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        this.limparCampos();
         DialogCadastroUsuario cad = new DialogCadastroUsuario(this, true);
         cad.setSize(Redimensionar.redimensionarTela());
         cad.setLocationRelativeTo(null);
@@ -722,6 +765,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        this.limparCampos();
         DialogCadastroFornecedor cad = new DialogCadastroFornecedor(this, true);
         cad.setSize(Redimensionar.redimensionarTela());
         cad.setLocationRelativeTo(null);
@@ -735,6 +779,37 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         carregarDadosVeiculoCombo();
     }//GEN-LAST:event_jDateFocusGained
 
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+        DialogRelatorioPeriodo rp = new DialogRelatorioPeriodo(this, true);
+        rp.setSize(Redimensionar.redimensionarTela());
+        rp.setLocationRelativeTo(null);
+        rp.dispose();
+        rp.setUndecorated(true);
+        rp.setModal(false);
+        rp.setVisible(true);
+    }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void jMenuReajustarPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuReajustarPrecoActionPerformed
+        DialogAlterarValorVenda av = new DialogAlterarValorVenda(this, true);
+        av.setSize(Redimensionar.redimensionarTela());
+        av.setLocationRelativeTo(null);
+        av.dispose();
+        av.setUndecorated(true);
+        av.setModal(true);
+        av.setVisible(true);
+    }//GEN-LAST:event_jMenuReajustarPrecoActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        this.limparCampos();
+        DialogRelatorioAgrupadoProprietario rd = new DialogRelatorioAgrupadoProprietario(this, true);
+        //rd.dispose();
+        //rd.setUndecorated(true);
+        //rd.setModal(false);
+        rd.setSize(Redimensionar.redimensionarTela());
+        rd.setLocationRelativeTo(null);
+        rd.setVisible(true);
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
     private void cbPlacaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbPlacaFocusGained
         carregarDadosVeiculoCombo();
     }//GEN-LAST:event_cbPlacaFocusGained
@@ -747,7 +822,10 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         tp.setLocationRelativeTo(null);
         tp.setExtendedState(MAXIMIZED_BOTH);
         tp.setVisible(true);
+    }
 
+    public JButton getBtSalvar() {
+        return btSalvar;
     }
 
 
@@ -768,11 +846,14 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
@@ -781,6 +862,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuReajustarPreco;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -812,6 +894,11 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }
 
     private Abastecimento getDados() {
+        try {
+            obj = gerenciador.obterAbastecimento(Integer.valueOf(tfCodigo.getText()));
+        } catch (ExcecaoSQL | ExcecaoConexao ex) {
+            Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (obj == null) {
             obj = new Abastecimento();
         }
@@ -829,7 +916,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         return obj;
     }
 
-    private void setDados(Abastecimento obj) {
+    protected void setDados(Abastecimento obj) {
         this.jDate.setDate(obj.getData());
         this.tfKmHs.setText(String.valueOf(obj.getHoras()));
         this.tfKmHs.setText(String.valueOf(obj.getKm()));
@@ -872,7 +959,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         }
     }
 
-    public void estoqueLitros()  {
+    public void estoqueLitros() {
         float x = 0;
         try {
             x = gerenciador.getLitrosEntrada() - gerenciador.getLitrosSaida();
@@ -884,7 +971,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             System.exit(0);
         } catch (ExcecaoSQL ex) {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         NumberFormat nb = new DecimalFormat("0.00");
         lbSaldoDisponivel.setText(String.valueOf(nb.format(x)));
     }
@@ -926,21 +1013,6 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassCastException ex) {
             Logger.getLogger(FrmTelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void atualizarMes() {
-        PreparedStatement ps;
-        try {
-            ps = Conexao.getConnection().prepareStatement("UPDATE ABASTECIMENTO SET MES = MONTH(ABASTECIMENTO.DATA);");
-            ps.executeUpdate();
-        } catch (ExcecaoConexao ex) {
-            Logger.getLogger(DialogRelatorioCompraConsumo.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExcecaoSQL ex) {
-            Logger.getLogger(DialogRelatorioCompraConsumo.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(DialogRelatorioCompraConsumo.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

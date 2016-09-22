@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b1a22054-0036-49ad-ab36-331d6ea2624b">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="mes" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ano" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="quinz" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Logo" class="java.awt.Image"/>
+	<parameter name="tipo" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select distinct  a.id as a_id, p.nome as p_nome, a.mes as a_mes, a.quinzena as a_quinzena , v.placa as v_placa, a.data as a_data, a.litros as a_litros, 
+a.motorista as a_motorista, a.km as a_km, a.horas as a_hs, v.idveiculo as v_idveiculo, v.idproprietario as v_idproprietario, 
+ v.tipo as v_tipo, p.idproprietario as p_idproprietario, a.vlrunit as a_vlrunit
+
+from ABASTECIMENTO a
+inner join VEICULO v
+on a.idveiculo = v.idveiculo
+inner join PROPRIETARIO p
+on a.idproprietario = p.IDPROPRIETARIO
+where a.mes = $P{mes}
+and a.ano = $P{ano}
+and a.quinzena like $P{quinz}
+and v.idproprietario = p.idproprietario
+and p.nome like '%%'
+and p.vendadiesel like $P{tipo}
+order by p.nome]]>
+	</queryString>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="p_nome" class="java.lang.String"/>
+	<field name="a_mes" class="java.lang.Integer"/>
+	<field name="a_quinzena" class="java.lang.String"/>
+	<field name="v_placa" class="java.lang.String"/>
+	<field name="a_data" class="java.sql.Timestamp"/>
+	<field name="a_litros" class="java.lang.Float"/>
+	<field name="a_motorista" class="java.lang.String"/>
+	<field name="a_km" class="java.lang.Integer"/>
+	<field name="a_hs" class="java.lang.Integer"/>
+	<field name="v_idveiculo" class="java.lang.Integer"/>
+	<field name="v_idproprietario" class="java.lang.Integer"/>
+	<field name="v_tipo" class="java.lang.String"/>
+	<field name="p_idproprietario" class="java.lang.Integer"/>
+	<field name="a_vlrunit" class="java.lang.Double"/>
+	<variable name="a_litros_1" class="java.lang.Float" resetType="Group" resetGroup="Prop" calculation="Sum">
+		<variableExpression><![CDATA[$F{a_litros}]]></variableExpression>
+	</variable>
+	<variable name="a_vlrunit_1" class="java.lang.Double" resetType="Group" resetGroup="Prop" calculation="Average">
+		<variableExpression><![CDATA[$F{a_vlrunit}]]></variableExpression>
+	</variable>
+	<variable name="Total" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{a_litros}*$F{a_vlrunit}]]></variableExpression>
+	</variable>
+	<variable name="Total2" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{a_litros_1}*$V{a_vlrunit_1}]]></variableExpression>
+	</variable>
+	<variable name="Total2Geral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{Total}]]></variableExpression>
+	</variable>
+	<variable name="TotalLitros" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{a_litros}]]></variableExpression>
+	</variable>
+	<variable name="mediaValor" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$V{a_vlrunit_1}]]></variableExpression>
+	</variable>
+	<group name="Prop">
+		<groupExpression><![CDATA[$F{p_nome}]]></groupExpression>
+		<groupHeader>
+			<band height="41">
+				<textField>
+					<reportElement x="2" y="0" width="553" height="20" uuid="73407a44-c853-469f-bec8-79f87bc596cd"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{p_nome}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="18" width="100" height="20" uuid="a839bd26-3b26-4571-b217-4a64a830eae8"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="195" y="18" width="100" height="20" uuid="05452c56-f928-4d4e-9d6b-b467358b0664"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Placa]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="295" y="18" width="100" height="20" uuid="2f023afc-70e2-4284-b1d2-dfd841e679f9"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Litros]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="395" y="18" width="100" height="20" uuid="2feab9eb-a127-4678-b8db-96cb530f1049"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vlr. Unit.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="102" y="18" width="91" height="20" uuid="91701fdb-8992-4a70-b8ba-7f4c3ec61421"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Veículo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="495" y="18" width="60" height="20" uuid="16dd8700-1fc0-46ca-b416-ee52c3366d45"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total R$]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<textField pattern="#,##0.00">
+					<reportElement x="295" y="0" width="100" height="20" uuid="7c15258d-d4ca-47ad-a5c0-1e9983897ce0"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{a_litros_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="395" y="0" width="100" height="20" uuid="76cf0617-8ddd-4388-a118-6a67fecfa0dd"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{a_vlrunit_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="495" y="0" width="60" height="20" uuid="a5a26a84-1102-4f72-990b-e02f281c2fc7"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Total2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="83" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="27" width="555" height="35" uuid="06810bc0-c9d2-49d0-b41e-a4b1f492a649"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Relatório Agrupado Terceiros]]></text>
+			</staticText>
+			<image>
+				<reportElement x="2" y="3" width="147" height="59" uuid="6f04bff1-d62f-49f0-88cc-6190283f5d62"/>
+				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
+			</image>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="3" width="555" height="24" uuid="4b49181a-14b2-439b-a5dc-bee7749c50cb"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="166" y="62" width="59" height="20" uuid="40b25237-295d-41a4-8099-23092322a113"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{mes}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="129" y="62" width="37" height="20" uuid="9348218b-c275-467f-8512-bf54b75dda8d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mês:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="62" width="37" height="20" uuid="80afd5b1-386a-43f8-baf7-fe959827b6fd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ano:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="39" y="62" width="90" height="20" uuid="f1e469f8-db7a-46c5-9095-bb22eec3aa9c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{ano}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="225" y="62" width="70" height="20" uuid="4e7e3545-ac9f-4df4-83bd-011947762a50"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quinzena:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="295" y="62" width="100" height="20" uuid="aa7c2fbc-c3a2-4aad-9525-b653d023468a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{quinz}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="432" y="62" width="100" height="20" uuid="2a65e1b6-b50a-4319-8d7f-806a28760f91"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="395" y="62" width="37" height="20" uuid="a4e4a794-8759-4361-94d0-31523993bace"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="4" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="6" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="1" width="100" height="20" uuid="7959928d-7217-4c1c-b7ac-0ae81b456fc3"/>
+				<textFieldExpression><![CDATA[$F{a_data}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="1" width="100" height="20" uuid="f56ee5d3-5af5-455b-a048-3754fcbae1e5"/>
+				<textFieldExpression><![CDATA[$F{v_placa}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="295" y="0" width="100" height="20" uuid="41cd7fcf-8230-468f-9aa0-0a9cabc8b047"/>
+				<textFieldExpression><![CDATA[$F{a_litros}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="395" y="0" width="100" height="20" uuid="62f57898-c8e8-4b71-9937-2de6b411b72d"/>
+				<textFieldExpression><![CDATA[$F{a_vlrunit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="1" width="93" height="20" uuid="4f15483f-76a7-46da-aa33-c1fd230863ac"/>
+				<textFieldExpression><![CDATA[$F{v_tipo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="495" y="1" width="60" height="20" uuid="2eee2699-fb3e-4d45-ad1f-096cfef38f0c"/>
+				<textFieldExpression><![CDATA[$V{Total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="432" y="0" width="80" height="20" uuid="21b3b39d-9ab5-443e-a031-0a3a02647bbc"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="512" y="0" width="40" height="20" uuid="24824b84-057e-42f5-a8e5-198364d4b876"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="47" splitType="Stretch">
+			<textField pattern="#,##0.00">
+				<reportElement x="293" y="0" width="100" height="20" uuid="ff141c39-7c9d-4ba7-9d48-482e15806ba8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TotalLitros}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="393" y="0" width="100" height="20" uuid="1d4e8cc6-02a4-4d16-8b2e-35d108f673a3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{mediaValor}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="492" y="0" width="63" height="20" uuid="b7ff7ede-88b8-4133-8397-d8e55b2a4662"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total2Geral}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="7e87ba22-85af-4dc2-a3b4-17c044df222d"/>
+			</line>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="8352343c-0224-4dde-b8de-a3960f2445d9"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="1" width="291" height="20" uuid="35d178b1-3e21-4c69-9091-3fe8de6e0066"/>
+				<text><![CDATA[Total Geral]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

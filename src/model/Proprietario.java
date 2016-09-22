@@ -6,6 +6,8 @@
 
 package model;
 
+import java.util.Objects;
+
 /**
  *
  * @author novo
@@ -15,21 +17,24 @@ public class Proprietario {
     private String nome;
     private String documento;
     private String modificado;
+    private String vendadiesel;
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 47 * hash + this.id;
+        int hash = 7;
+        hash = 89 * hash + this.id;
+        hash = 89 * hash + Objects.hashCode(this.nome);
+        hash = 89 * hash + Objects.hashCode(this.documento);
+        hash = 89 * hash + Objects.hashCode(this.modificado);
+        hash = 89 * hash + Objects.hashCode(this.vendadiesel);
         return hash;
     }
 
     @Override
-    public String toString() {
-        return this.nome;
-    }
-
-    @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -40,8 +45,31 @@ public class Proprietario {
         if (this.id != other.id) {
             return false;
         }
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        if (!Objects.equals(this.documento, other.documento)) {
+            return false;
+        }
+        if (!Objects.equals(this.modificado, other.modificado)) {
+            return false;
+        }
+        if (!Objects.equals(this.vendadiesel, other.vendadiesel)) {
+            return false;
+        }
         return true;
     }
+
+    
+
+    @Override
+    public String toString() {
+        return this.nome;
+    }
+
+   
+
+  
 
     public int getId() {
         return id;
@@ -73,6 +101,14 @@ public class Proprietario {
 
     public void setModificado(String modificado) {
         this.modificado = modificado;
+    }
+
+    public String getVendadiesel() {
+        return vendadiesel;
+    }
+
+    public void setVendadiesel(String vendadiesel) {
+        this.vendadiesel = vendadiesel;
     }
 
     
