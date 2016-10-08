@@ -382,7 +382,7 @@ public class GerenciadorAbastecimento {
     
     public double precoCusto() throws ExcecaoConexao,SQLException, ExcecaoConexao, ExcecaoSQL {
         double result = 0;
-        String sql = "SELECT AVG(VALOR_UNITARIO) AS VALOR_UNITARIO FROM ENTRADA  WHERE DATA > '2015/01/01';";
+        String sql = "SELECT AVG(VALOR_UNITARIO) AS VALOR_UNITARIO FROM ENTRADA  WHERE DATA > '2016/09/01';";
         PreparedStatement ps = Conexao.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {

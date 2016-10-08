@@ -32,7 +32,7 @@ public class FrmRealizarLogin extends javax.swing.JFrame {
 
     private GerenciadorUsuario gu = new GerenciadorUsuario();
     private GerenciadorAbastecimento ga = new GerenciadorAbastecimento();
-        private final double versaoAtual = 2.14;
+        private final double versaoAtual = 2.15;
 
     /**
      * Creates new form FrmRealizarLogin
